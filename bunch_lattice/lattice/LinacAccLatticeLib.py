@@ -1,6 +1,6 @@
 """
-The general Linac Accelerator lattice. It is a subclass of the Acclattice.
-It tracks the bunch through the linac accelerator nodes. In addition to the
+The general Bunch Tracking Lattice. It is a subclass of the Acclattice.
+It tracks the bunch through accelerator nodes. In addition to the
 usual accelerator lattice it has the sequences and RF cavities. The sequences and
 RF cavities are containers for accelerator nodes (seqencies) and RF gaps.
 The Sequence class is used to keep iformation about positions of elements that are inside.
@@ -23,7 +23,7 @@ from orbit.py_linac.lattice.LinacAccNodes import Quad, AbstractRF_Gap, MarkerLin
 from orbit.core.bunch import Bunch
 
 
-class LinacAccLattice(AccLattice):
+class BunchTrackingLattice(AccLattice):
     """
     The subclass of the AccLattice class. In the beginning the lattcie is empty.
     """
@@ -35,11 +35,11 @@ class LinacAccLattice(AccLattice):
 
     def initialize(self):
         """
-        Method. Initializes the linac lattice, child node structures, and calculates
-        the one turn matrix.
+        Method. Initializes the linac lattice, child node structures.
         """
+        #---- self.getNodePositionsDict() - will be defined  after AccLattice.initialize(...)
         AccLattice.initialize(self)
-        # -----add Sequences that are referenced from the AccNodes
+        #---- add Sequences that are referenced from the AccNodes
         self.__sequences = []
         for node in self.getNodes():
             seq = node.getSequence()
