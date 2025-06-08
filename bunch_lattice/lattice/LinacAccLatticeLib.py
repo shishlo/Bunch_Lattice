@@ -35,7 +35,7 @@ class BunchTrackingLattice(AccLattice):
 
     def initialize(self):
         """
-        Method. Initializes the linac lattice, child node structures.
+        Method. Initializes the linac lattice, child nodes structures.
         """
         #---- self.getNodePositionsDict() - will be defined  after AccLattice.initialize(...)
         AccLattice.initialize(self)
@@ -77,13 +77,18 @@ class BunchTrackingLattice(AccLattice):
                 if not rf_cavity in self.__rfCavities:
                     self.__rfCavities.append(rf_cavity)
 
-    def setLinacTracker(self, switch=True):
+    def setTracker(self, switch_to = "TEAPOT"):
         """
-        This method will switch tracker module to the linac specific traker
+        This method will switch tracker module to the specific traker
         for each node on the first level.
+        At this moment there are 2 different modules:
+        1. TEAPOT tracker - based onsecond order symplectic integration 
+        2. LINAC tracker  - used in linacs lattices to handle huge energy spread particles in the bunch.
+                            It should be used to simulate beam loss in linacs.
+        By default it is TEAPOT tracker 
         """
         for node in self.getNodes():
-            node.setLinacTracker(switch)
+            node.setTracker(switch_to)
 
     def reverseOrder(self):
         """
@@ -119,7 +124,6 @@ class BunchTrackingLattice(AccLattice):
 				(pos_start,pos_stop) = node_pos_dict[node]
 				print "debug node=",node.getName()," (pos_start,pos_stop)=",(pos_start,pos_stop)," L=",node.getLength()
 		"""
-
     def getSubLattice(self, index_start=-1, index_stop=-1):
         """
         It returns the new LinacAccLattice with children with indexes
@@ -137,7 +141,7 @@ class BunchTrackingLattice(AccLattice):
         msg = msg + "Stop."
         msg = msg + os.linesep
         orbitFinalize(msg)
-        return self._getSubLattice(LinacAccLattice(), index_start, index_stop)
+        return self._getSubLattice(BunchTrackingLattice(), index_start, index_stop)
 
     def trackActions(self, actionsContainer, paramsDict={}, index_start=-1, index_stop=-1):
         """
