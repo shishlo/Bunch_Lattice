@@ -58,26 +58,26 @@ class SNS_LinacLatticeFactory:
         """
         return self.maxDriftLength
 
-    def getLinacAccLattice(self, names, xml_file_name):
+    def getAccLattice(self, names, xml_file_name):
         """
         Returns the linac accelerator lattice for specified sequence names and for a specified XML file.
         """
         if len(names) < 1:
-            msg = "The SNS_LinacLatticeFactory method getLinacAccLattice(names,xml_file_name): you have to specify the names array!"
+            msg = "The SNS_LinacLatticeFactory method getAccLattice(names,xml_file_name): you have to specify the names array!"
             msg = msg + os.linesep
             msg = msg + "Stop."
             msg = msg + os.linesep
             orbitFinalize(msg)
         # ----- let's parse the XML file
         acc_da = XmlDataAdaptor.adaptorForFile(xml_file_name)
-        return self.getLinacAccLatticeFromDA(names, acc_da)
+        return self.getAccLatticeFromDA(names, acc_da)
 
-    def getLinacAccLatticeFromDA(self, names, acc_da):
+    def getAccLatticeFromDA(self, names, acc_da):
         """
         Returns the linac accelerator lattice for specified sequence names.
         """
         if len(names) < 1:
-            msg = "The SNS_LinacLatticeFactory method getLinacAccLatticeFromDA(names,): you have to specify the names array!"
+            msg = "The SNS_LinacLatticeFactory method getAccLatticeFromDA(names,): you have to specify the names array!"
             msg = msg + os.linesep
             msg = msg + "Stop."
             msg = msg + os.linesep
@@ -109,7 +109,7 @@ class SNS_LinacLatticeFactory:
         for seq_da in accSeq_da_arr:
             # print "debug === seq=",seq_da.getName()
             accSeq = Sequence(seq_da.getName())
-            accSeq.setLinacAccLattice(linacAccLattice)
+            accSeq.setAccLattice(linacAccLattice)
             accSeq.setLength(seq_da.doubleValue("length"))
             accSeq.setPosition(seqPosition)
             seqPosition = seqPosition + accSeq.getLength()
@@ -279,7 +279,7 @@ class SNS_LinacLatticeFactory:
                     accSeq.addNode(accNode)
                 else:
                     if node_length != 0.0:
-                        msg = "The LinacLatticeFactory method getLinacAccLattice(names): there is a strange element!"
+                        msg = "The LinacLatticeFactory method getAccLattice(names): there is a strange element!"
                         msg = msg + os.linesep
                         msg = msg + "name=" + node_da.stringValue("name")
                         msg = msg + os.linesep
@@ -339,7 +339,7 @@ class SNS_LinacLatticeFactory:
             # insert the drift before the first element if its half length less than its position
             if math.fabs(firstNode.getLength() / 2.0 - firstNode.getParam("pos")) > self.zeroDistance:
                 if firstNode.getLength() / 2.0 > firstNode.getParam("pos"):
-                    msg = "The LinacLatticeFactory method getLinacAccLattice(names): the first node is too long!"
+                    msg = "The LinacLatticeFactory method getAccLattice(names): the first node is too long!"
                     msg = msg + os.linesep
                     msg = msg + "name=" + firstNode.getName()
                     msg = msg + os.linesep
@@ -363,7 +363,7 @@ class SNS_LinacLatticeFactory:
             # insert the drift after the last element if its half length less + position is less then the sequence length
             if math.fabs(lastNode.getLength() / 2.0 + lastNode.getParam("pos") - accSeq.getLength()) > self.zeroDistance:
                 if lastNode.getLength() / 2.0 + lastNode.getParam("pos") > accSeq.getLength():
-                    msg = "The LinacLatticeFactory method getLinacAccLattice(names): the last node is too long!"
+                    msg = "The LinacLatticeFactory method getAccLattice(names): the last node is too long!"
                     msg = msg + os.linesep
                     msg = msg + "name=" + lastNode.getName()
                     msg = msg + os.linesep
@@ -396,7 +396,7 @@ class SNS_LinacLatticeFactory:
                 accNode1 = copyAccNodes[node_ind + 1]
                 dist = accNode1.getParam("pos") - accNode1.getLength() / 2 - (accNode0.getParam("pos") + accNode0.getLength() / 2)
                 if dist < 0.0:
-                    msg = "The LinacLatticeFactory method getLinacAccLattice(names): two nodes are overlapping!"
+                    msg = "The LinacLatticeFactory method getAccLattice(names): two nodes are overlapping!"
                     msg = msg + os.linesep
                     msg = msg + "sequence name=" + accSeq.getName()
                     msg = msg + os.linesep
@@ -461,7 +461,7 @@ class SNS_LinacLatticeFactory:
         for name in names:
             ind = seqencesLocalNames.index(name)
             if ind < 0 or (count > 0 and ind != (ind_old + 1)):
-                msg = "The LinacLatticeFactory method getLinacAccLattice(names): sequence names array is wrong!"
+                msg = "The LinacLatticeFactory method getAccLattice(names): sequence names array is wrong!"
                 msg = msg + os.linesep
                 msg = msg + "existing names=" + str(seqencesLocalNames)
                 msg = msg + os.linesep

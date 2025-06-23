@@ -1,10 +1,13 @@
 """
-The general Bunch Tracking Lattice. It is a subclass of the Acclattice.
+The general bunch tracking BaseAccLattice. It is a subclass of the Acclattice.
 It tracks the bunch through accelerator nodes. In addition to the
-usual accelerator lattice it has the sequences and RF cavities. The sequences and
-RF cavities are containers for accelerator nodes (seqencies) and RF gaps.
-The Sequence class is used to keep iformation about positions of elements that are inside.
-The Cavity class keeps the refernce to RF gaps and a value of the cavity amplitude.
+usual accelerator lattice it has the sequences and RF cavities. The sequences 
+are containers for accelerator nodes (could be also RF gap nodes). RF cavities 
+are other containers for RF gap nodes that provide the time synchronization
+between RF gaps. The Cavity class keeps the refernce to RF gaps and a value of 
+the cavity amplitude as a whole element.
+The Sequence class is used to keep iformation about positions of elements 
+that are inside.
 """
 
 import os
@@ -17,13 +20,13 @@ from orbit.utils import orbitFinalize, NamedObject, ParamsDictObject, phaseNearT
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
 # import acc. nodes
-from orbit.py_linac.lattice.LinacAccNodes import Quad, AbstractRF_Gap, MarkerLinacNode
+from BaseAccNodes import Quad, AbstractRF_Gap, MarkerLinacNode
 
 # import orbit Bunch
 from orbit.core.bunch import Bunch
 
 
-class BunchTrackingLattice(AccLattice):
+class BaseAccLattice(AccLattice):
     """
     The subclass of the AccLattice class. In the beginning the lattcie is empty.
     """
@@ -35,7 +38,7 @@ class BunchTrackingLattice(AccLattice):
 
     def initialize(self):
         """
-        Method. Initializes the linac lattice, child nodes structures.
+        Method. Initializes the base lattice, child nodes structures.
         """
         #---- self.getNodePositionsDict() - will be defined  after AccLattice.initialize(...)
         AccLattice.initialize(self)
@@ -45,6 +48,7 @@ class BunchTrackingLattice(AccLattice):
             seq = node.getSequence()
             if not seq in self.__sequences:
                 self.__sequences.append(seq)
+                self.setAccLattice(self)
         # ------define sequences' position and length (position of the beginning of the sequence)
         seqs = self.getSequences()
         for seq in seqs:
@@ -77,7 +81,7 @@ class BunchTrackingLattice(AccLattice):
                 if not rf_cavity in self.__rfCavities:
                     self.__rfCavities.append(rf_cavity)
 
-    def setTracker(self, switch_to = "TEAPOT"):
+    def setTracker(self, switch_to_tracker = "TEAPOT"):
         """
         This method will switch tracker module to the specific traker
         for each node on the first level.
@@ -85,10 +89,10 @@ class BunchTrackingLattice(AccLattice):
         1. TEAPOT tracker - based onsecond order symplectic integration 
         2. LINAC tracker  - used in linacs lattices to handle huge energy spread particles in the bunch.
                             It should be used to simulate beam loss in linacs.
-        By default it is TEAPOT tracker 
+        By default it is TEAPOT tracker. 
         """
         for node in self.getNodes():
-            node.setTracker(switch_to)
+            node.setTracker(switch_to_tracker)
 
     def reverseOrder(self):
         """
@@ -119,11 +123,13 @@ class BunchTrackingLattice(AccLattice):
             nodes = sorted(nodes, key=lambda x: x.getPosition(), reverse=False)
             seq.setNodes(nodes)
         """
+        # ------ check the positions of the nodes in the lattice
 		for seq in seqs:
 			for node in nodes:
 				(pos_start,pos_stop) = node_pos_dict[node]
 				print "debug node=",node.getName()," (pos_start,pos_stop)=",(pos_start,pos_stop)," L=",node.getLength()
 		"""
+	
     def getSubLattice(self, index_start=-1, index_stop=-1):
         """
         It returns the new LinacAccLattice with children with indexes
@@ -141,7 +147,7 @@ class BunchTrackingLattice(AccLattice):
         msg = msg + "Stop."
         msg = msg + os.linesep
         orbitFinalize(msg)
-        return self._getSubLattice(BunchTrackingLattice(), index_start, index_stop)
+        return self._getSubLattice(BaseAccLattice(), index_start, index_stop)
 
     def trackActions(self, actionsContainer, paramsDict={}, index_start=-1, index_stop=-1):
         """
@@ -149,6 +155,8 @@ class BunchTrackingLattice(AccLattice):
         The method from the parent class was overloaded to provide the ability to stop tracking
         if necessary. In the linac, the synchronous particle could start to move backwards in the lattice
         because of the RF parameters are far away from the design values (acceptance scans).
+        The tracking will stop at a node that will define: paramsDict["stop tracking"] = False
+        during the trackActions(...) call.
         """
         paramsDict["lattice"] = self
         paramsDict["actions"] = actionsContainer
@@ -186,7 +194,7 @@ class BunchTrackingLattice(AccLattice):
 
     def trackDesignBunch(self, bunch_in, paramsDict=None, actionContainer=None, index_start=-1, index_stop=-1):
         """
-        This will track the design bunch through the linac and set up RF Cavities times of
+        This will track the design bunch through the lattice and set up RF Cavities times of
         arrivals.
         """
         if actionContainer == None:
@@ -217,18 +225,6 @@ class BunchTrackingLattice(AccLattice):
     def getRF_Cavities(self):
         """Returns the array with RF cavities."""
         return self.__rfCavities
-
-    def addSequence(self, seq):
-        if isinstance(seq, Sequence) == True:
-            self.__sequences.append(seq)
-        else:
-            msg = "The LinacAccLattice, method addSequence(seq)!"
-            msg = msg + os.linesep
-            msg = msg + "seq is not a subclass of Sequence."
-            msg = msg + os.linesep
-            msg = msg + "Stop."
-            msg = msg + os.linesep
-            orbitFinalize(msg)
 
     def getSequence(self, name):
         """Returns the sequence instance according to the name"""
@@ -353,9 +349,8 @@ class BunchTrackingLattice(AccLattice):
 
 
 # ----------------------------------------------------------------
-# Classes that are specific for the linac model
+# Classes that are specific for the bunch lattice model
 # ----------------------------------------------------------------
-
 
 class RF_Cavity(NamedObject, ParamsDictObject):
     """
@@ -525,38 +520,38 @@ class Sequence(NamedObject, ParamsDictObject):
     def __init__(self, name="none"):
         NamedObject.__init__(self, name)
         ParamsDictObject.__init__(self)
-        self.__linacNodes = []
+        self.__nodes = []
         self.__rfCavities = []
         self.addParam("position", 0.0)
         self.addParam("length", 0.0)
-        self.addParam("linacAccLattice", None)
+        self.addParam("accLattice", None)
 
-    def setLinacAccLattice(self, lattice):
-        self.addParam("linacAccLattice", lattice)
+    def setAccLattice(self, lattice):
+        self.addParam("accLattice", lattice)
 
-    def getLinacAccLattice(self):
-        return self.getParam("linacAccLattice")
+    def getAccLattice(self):
+        return self.getParam("accLattice")
 
     def addNode(self, node, index=-1):
-        """Adds the Linac Node to the sequence."""
+        """Adds the Node to the sequence."""
         node.setSequence(self)
         if index < 0:
-            self.__linacNodes.append(node)
+            self.__nodes.append(node)
         else:
-            self.__linacNodes.insert(index, node)
+            self.__nodes.insert(index, node)
 
     def getNodes(self):
-        """Returns the array with Linac Nodes."""
-        return self.__linacNodes
+        """Returns the array with Nodes."""
+        return self.__nodes
 
     def removeAllNodes(self):
         """Removes all nodes from the sequence."""
-        self.__linacNodes = []
+        self.__nodes = []
 
-    def setNodes(self, linacNodes):
-        """Set a new set of Linac Nodes."""
-        self.__linacNodes = linacNodes
-        for node in self.__linacNodes:
+    def setNodes(self, nodes):
+        """Set a new set of Nodes."""
+        self.__nodes = nodes
+        for node in self.__nodes:
             node.setSequence(self)
 
     def addRF_Cavity(self, cav):
@@ -607,5 +602,5 @@ class Sequence(NamedObject, ParamsDictObject):
         """
         Reverse order of nodes and RF cavities in sequence.
         """
-        self.__linacNodes.reverse()
+        self.__nodes.reverse()
         self.__rfCavities.reverse()

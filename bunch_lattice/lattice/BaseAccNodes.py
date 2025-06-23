@@ -1,5 +1,5 @@
 """
-This module is a collection of the linac accelerator nodes which are the subclasses of
+This module is a collection of the base accelerator nodes which are the subclasses of
 the AccNode class. We cannot use here TEAPOT nodes from the TEAPOT package
 directly because we use the field as a parameter for quads and dipole correctors
 instead of k1 = 1/(B*rho)*(dB/dr).
@@ -25,33 +25,45 @@ from orbit.teapot_base import TPB
 # quad2 - linac quad non-linear part of tracking
 from orbit.core.linac import linac_tracking
 
-
-class BaseLinacNode(AccNodeBunchTracker):
+class BaseAccNode(AccNodeBunchTracker):
     """
-    The base abstract class of the linac accelerator elements hierarchy.
+    The base abstract class of the accelerator elements hierarchy.
     It cannot be tilted. The direct subclasses of this class will be markers,
     user defined nodes etc.
     """
 
     def __init__(self, name="none"):
         """
-        Constructor. Creates the base linac element. This is a superclass for all linac elements.
+        Constructor. Creates the base element. This is a superclass for all elements.
         """
         AccNodeBunchTracker.__init__(self, name)
         self.setType("baseLinacNode")
         self.setParam("pos", 0.0)
-        self.__linacSeqence = None
+        self.__accSeqence = None
         # by default we use the TEAPOT tracker module
         self.tracking_module = TPB
+        self.tracker_type  = "TEAPOT"
 
-    def setLinacTracker(self, switch=True):
+    def setTracker(self, switch_to_tracker = "TEAPOT"):
         """
-        This method will switch tracker module to the linac specific traker by default
+        This method will set tracker for some elements in the node.
+        There are two possiblities right now: 
+        1. TEAPOT (default TPB TeaPotBase)
+        2. Linac stile tracking for drift, quad1, and quad2 components.
         """
-        if switch:
+        if(switch_to_tracker != "TEAPOT"):
             self.tracking_module = linac_tracking
+            self.tracker_type = "LINAC"
         else:
             self.tracking_module = TPB
+            self.tracker_type = "TEAPOT"
+            
+    def getTrackerType(self):
+        """
+        Returns the tracker type name : TEAPOT or LINAC. 
+        There are only two types at the moment.
+        """
+        return self.tracker_type 
 
     def isRFGap(self):
         """
@@ -63,7 +75,7 @@ class BaseLinacNode(AccNodeBunchTracker):
         """
         Sets the seqence.
         """
-        self.__linacSeqence = seq
+        self.__accSeqence = seq
 
     def setPosition(self, pos):
         """
@@ -85,7 +97,7 @@ class BaseLinacNode(AccNodeBunchTracker):
         """
         Returns the seqence.
         """
-        return self.__linacSeqence
+        return self.__accSeqence
 
     def trackDesign(self, paramsDict):
         """
@@ -111,24 +123,24 @@ class BaseLinacNode(AccNodeBunchTracker):
         actionContainer.removeAction(trackDesign, AccActionsContainer.BODY)
 
 
-class MarkerLinacNode(BaseLinacNode):
+class MarkerNode(BaseAccNode):
     """
     This is a marker. It does nothing. If the user wants to perform operations with bunch
-    he/shi should specify tracking and design tracking functions.
+    he/she should specify tracking and design tracking functions.
     """
 
     def __init__(self, name="none"):
-        BaseLinacNode.__init__(self, name)
-        self.setType("markerLinacNode")
+        BaseAccNode.__init__(self, name)
+        self.setType("markerNode")
 
 
-class LinacNode(BaseLinacNode):
+class TiltNode(BaseAccNode):
     """
-    The abstract class of the linac accelerator elements hierarchy that can be tilted.
+    The abstract class of the base accelerator elements hierarchy that can be tilted.
     """
 
     def __init__(self, name="none"):
-        BaseLinacNode.__init__(self, name)
+        BaseAccNode.__init__(self, name)
         self.__tiltNodeIN = TiltElement()
         self.__tiltNodeOUT = TiltElement()
         self.__tiltNodeIN.setName(name + "_tilt_in")
@@ -136,7 +148,7 @@ class LinacNode(BaseLinacNode):
         self.addChildNode(self.__tiltNodeIN, AccNode.ENTRANCE)
         self.addChildNode(self.__tiltNodeOUT, AccNode.EXIT)
         self.addParam("tilt", self.__tiltNodeIN.getTiltAngle())
-        self.setType("linacNode")
+        self.setType("tiltNode")
 
     def setTiltAngle(self, angle=0.0):
         """
@@ -165,20 +177,20 @@ class LinacNode(BaseLinacNode):
         return self.__tiltNodeOUT
 
 
-class LinacMagnetNode(LinacNode):
+class BaseMagnetNode(TiltNode):
     """
-    The abstract class of the linac magnet.
+    The abstract class of the magnet.
     """
 
     def __init__(self, name="none"):
-        LinacNode.__init__(self, name)
+        TiltNode.__init__(self, name)
         self.__fringeFieldIN = FringeField(self)
         self.__fringeFieldOUT = FringeField(self)
         self.__fringeFieldIN.setName(name + "_fringe_in")
         self.__fringeFieldOUT.setName(name + "_fringe_out")
         self.addChildNode(self.__fringeFieldIN, AccNode.ENTRANCE)
         self.getChildNodes(AccNode.EXIT).insert(0, self.__fringeFieldOUT)
-        self.setType("linacMagnet")
+        self.setType("baseMagnet")
 
     def getField(self):
         """
@@ -264,11 +276,11 @@ class LinacMagnetNode(LinacNode):
 
 
 # -----------------------------------------------------
-#   The REAL LINAC NODES
+#   The REAL BASE NODES
 # -----------------------------------------------------
 
 
-class Drift(BaseLinacNode):
+class Drift(BaseAccNode):
     """
     Drift element.
     """
@@ -277,7 +289,7 @@ class Drift(BaseLinacNode):
         """
         Constructor. Creates the Drift element.
         """
-        BaseLinacNode.__init__(self, name)
+        BaseAccNode.__init__(self, name)
         self.setType("drift")
 
     def track(self, paramsDict):
@@ -289,7 +301,7 @@ class Drift(BaseLinacNode):
         self.tracking_module.drift(bunch, length)
 
 
-class Quad(LinacMagnetNode):
+class Quad(BaseMagnetNode):
     """
     Quad Combined Function TEAPOT element.
     """
@@ -299,13 +311,13 @@ class Quad(LinacMagnetNode):
         Constructor. Creates the Quad Combined Function element.
         Example: poleArr = [2,3] - for sextupoles and octupoles
         """
-        LinacMagnetNode.__init__(self, name)
+        BaseMagnetNode.__init__(self, name)
         self.addParam("dB/dr", 0.0)
         self.addParam("poles", [])
         self.addParam("kls", [])
         self.addParam("skews", [])
         self.setnParts(2)
-        self.setType("linacQuad")
+        self.setType("Quad")
 
         def fringeIN(node, paramsDict):
             # B*rho = 3.335640952*momentum/charge [T*m] if momentum in GeV/c
@@ -397,19 +409,6 @@ class Quad(LinacMagnetNode):
         lengthStep = self.getLength() / nParts
         for i in range(nParts):
             self.setLength(lengthStep, i)
-        """
-        #=============================================
-        # This is an old TEAPOT-like implementation
-        # of the Quad slicing.
-        #=============================================
-        lengthIN = (self.getLength()/(nParts - 1))/2.0
-        lengthOUT = (self.getLength()/(nParts - 1))/2.0
-        lengthStep = lengthIN + lengthOUT
-        self.setLength(lengthIN,0)
-        self.setLength(lengthOUT,nParts - 1)
-        for i in range(nParts-2):
-            self.setLength(lengthStep,i+1)
-        """
 
     def track(self, paramsDict):
         """
@@ -456,34 +455,6 @@ class Quad(LinacMagnetNode):
             TPB.multp(bunch, pole, kl, skew)
         self.tracking_module.quad2(bunch, step / 4)
         self.tracking_module.quad1(bunch, step / 4, kq)
-        """
-        #=============================================
-        # This is an old TEAPOT-like implementation
-        # of the Quad tracking.
-        #=============================================
-        if(index == 0):
-            self.tracking_module.quad1(bunch, length, kq)
-            return
-        if(index > 0 and index < (nParts-1)):
-            self.tracking_module.quad2(bunch, length/2.0)
-            for i in range(len(poleArr)):
-                pole = poleArr[i]
-                kl = klArr[i]/(nParts - 1)
-                skew = skewArr[i]
-                TPB.multp(bunch,pole,kl,skew)
-            self.tracking_module.quad2(bunch, length/2.0)
-            self.tracking_module.quad1(bunch, length, kq)
-            return
-        if(index == (nParts-1)):
-            self.tracking_module.quad2(bunch, length)
-            for i in range(len(poleArr)):
-                pole = poleArr[i]
-                kl = klArr[i]*kq*length/(nParts - 1)
-                skew = skewArr[i]
-                TPB.multp(bunch,pole,kl,skew)
-            self.tracking_module.quad2(bunch, length)
-            self.tracking_module.quad1(bunch, length, kq)
-        """
         return
 
     def getTotalField(self, z):
@@ -498,7 +469,7 @@ class Quad(LinacMagnetNode):
         return G
 
 
-class Bend(LinacMagnetNode):
+class Bend(BaseMagnetNode):
     """
     Bend Combined Functions TEAPOT element.
     """
@@ -507,7 +478,7 @@ class Bend(LinacMagnetNode):
         """
         Constructor. Creates the Bend Combined Functions TEAPOT element .
         """
-        LinacMagnetNode.__init__(self, name)
+        BaseMagnetNode.__init__(self, name)
         self.addParam("poles", [])
         self.addParam("kls", [])
         self.addParam("skews", [])
@@ -518,7 +489,7 @@ class Bend(LinacMagnetNode):
         self.addParam("theta", 1.0e-36)
 
         self.setnParts(2)
-        self.setType("bend linac")
+        self.setType("bend")
         self.setUsageFringeFieldIN(True)
         self.setUsageFringeFieldOUT(True)
 
@@ -690,7 +661,7 @@ class Bend(LinacMagnetNode):
         return
 
 
-class DCorrectorH(LinacMagnetNode):
+class DCorrectorH(BaseMagnetNode):
     """
     The Horizontal Dipole Corrector.
     """
@@ -699,7 +670,7 @@ class DCorrectorH(LinacMagnetNode):
         """
         Constructor. Creates the Horizontal Dipole Corrector element .
         """
-        LinacMagnetNode.__init__(self, name)
+        BaseMagnetNode.__init__(self, name)
         self.addParam("B", 0.0)
         self.addParam("effLength", 0.0)
         self.setType("dch")
@@ -735,7 +706,7 @@ class DCorrectorH(LinacMagnetNode):
         self.tracking_module.kick(bunch, kick, 0.0, 0.0)
 
 
-class DCorrectorV(LinacMagnetNode):
+class DCorrectorV(BaseMagnetNode):
     """
     The Vertical Dipole Corrector.
     """
@@ -744,7 +715,7 @@ class DCorrectorV(LinacMagnetNode):
         """
         Constructor. Creates the Vertical Dipole Corrector element .
         """
-        LinacMagnetNode.__init__(self, name)
+        BaseMagnetNode.__init__(self, name)
         self.addParam("B", 0.0)
         self.addParam("effLength", 0.0)
         self.setType("dcv")
@@ -780,16 +751,16 @@ class DCorrectorV(LinacMagnetNode):
         self.tracking_module.kick(bunch, 0, kick, 0.0)
 
 
-class ThickKick(LinacMagnetNode):
+class ThickKick(BaseMagnetNode):
     """
-    Thick kiker linac node.
+    Thick kiker base node.
     """
 
     def __init__(self, name="thick_kick"):
         """
-        Constructor. Creates the thick kiker linac node.
+        Constructor. Creates the thick kiker node.
         """
-        LinacMagnetNode.__init__(self, name)
+        BaseMagnetNode.__init__(self, name)
         self.addParam("Bx", 0.0)
         self.addParam("By", 0.0)
         self.setnParts(1)
@@ -849,16 +820,16 @@ class ThickKick(LinacMagnetNode):
         self.tracking_module.kick(bunch, kickX, kickY, 0.0)
         self.tracking_module.drift(bunch, length / 2.0)
 
-class Solenoid(BaseLinacNode):
+class Solenoid(BaseAccNode):
     """
-    Solenoid TEAPOT based element.
+    Solenoid TEAPOT base node.
     """
 
     def __init__(self, name="solenoid no name"):
         """
         Constructor. Creates the Solenoid TEAPOT based element.
         """
-        BaseLinacNode.__init__(self, name)
+        BaseAccNode.__init__(self, name)
         self.setType("solenoid")
         self.addParam("B", 0.0)
 
@@ -876,7 +847,7 @@ class Solenoid(BaseLinacNode):
             useCharge = paramsDict["useCharge"]
         TPB.soln(bunch, length, B, useCharge)
 
-class AbstractRF_Gap(BaseLinacNode):
+class AbstractRF_Gap(BaseAccNode):
     """
     This is an abstarct class for all RF Gap classes.
     """
@@ -885,7 +856,7 @@ class AbstractRF_Gap(BaseLinacNode):
         """
         Constructor for the abstract RF gap.
         """
-        BaseLinacNode.__init__(self, name)
+        BaseAccNode.__init__(self, name)
         self.addParam("gap_phase", 0.0)
         self.addParam("rfCavity", None)
         self.setLength(0.0)
@@ -896,7 +867,7 @@ class AbstractRF_Gap(BaseLinacNode):
         """
         The AbstractRF_Gap class initialize() method.
         """
-        BaseLinacNode.initialize(self)
+        BaseAccNode.initialize(self)
 
     def isRFGap(self):
         """
@@ -943,14 +914,14 @@ class AbstractRF_Gap(BaseLinacNode):
     def track(self, paramsDict):
         """
         The subclasses AbstractRF_Gap class should implement
-        the BaseLinacNode class track(probe) method.
+        the BaseAccNode class track(probe) method.
         """
         pass
 
     def trackDesign(self, paramsDict):
         """
         The subclasses AbstractRF_Gap class should implement
-        the BaseLinacNode class trackDesign(probe) method.
+        the BaseAccNode class trackDesign(probe) method.
         """
         pass
 
@@ -960,7 +931,7 @@ class AbstractRF_Gap(BaseLinacNode):
 # ------------------------------------------------------------
 
 
-class TiltElement(BaseLinacNode):
+class TiltElement(BaseAccNode):
     """
     The class to do tilt at the entrance of an element.
     """
@@ -995,7 +966,7 @@ class TiltElement(BaseLinacNode):
             TPB.rotatexy(bunch, self.__angle)
 
 
-class FringeField(BaseLinacNode):
+class FringeField(BaseAccNode):
     """
     The class is a base class for the fringe field classes for others elements.
     """

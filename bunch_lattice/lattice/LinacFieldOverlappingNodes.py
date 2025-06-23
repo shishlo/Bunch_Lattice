@@ -76,13 +76,13 @@ class AxisField_and_Quad_RF_Gap(AbstractRF_Gap):
         # ---- If it is true then the this tracking will be in the reversed lattice
         self.reversed_lattice = False
 
-    def setLinacTracker(self, switch=True):
+    def setTracker(self, switch=True):
         """
         This method will switch RF gap model to slower one where transformations
         coefficients are calculated for each particle in the bunch.
         """
-        BaseLinacNode.setLinacTracker(self, switch)
-        AbstractRF_Gap.setLinacTracker(self, switch)
+        BaseLinacNode.setTracker(self, switch)
+        AbstractRF_Gap.setTracker(self, switch)
         if switch:
             self.cppGapModel = RfGapThreePointTTF_slow()
         else:
@@ -265,7 +265,7 @@ class AxisField_and_Quad_RF_Gap(AbstractRF_Gap):
         rfCavity = self.getRF_Cavity()
         if not rfCavity.isDesignSetUp():
             sequence = self.getSequence()
-            accLattice = sequence.getLinacAccLattice()
+            accLattice = sequence.getAccLattice()
             msg = "The AxisFieldRF_Gap class. "
             msg += "You have to run trackDesign on the LinacAccLattice"
             msg += "first to initialize all RF Cavities' phases!"

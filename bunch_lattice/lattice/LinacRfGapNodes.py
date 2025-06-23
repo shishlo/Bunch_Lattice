@@ -85,12 +85,12 @@ class BaseRF_Gap(AbstractRF_Gap):
         # self.cppGapModel = BaseRfGap()
         self.cppGapModel = RfGapTTF()
 
-    def setLinacTracker(self, switch=True):
+    def setTracker(self, switch=True):
         """
         This method will switch RF gap model to slower one where transformations
         coefficients are calculated for each particle in the bunch.
         """
-        AbstractRF_Gap.setLinacTracker(self, switch)
+        AbstractRF_Gap.setTracker(self, switch)
         if switch:
             if isinstance(self.cppGapModel, BaseRfGap) or isinstance(self.cppGapModel, BaseRfGap_slow):
                 self.cppGapModel = BaseRfGap_slow()
@@ -215,7 +215,7 @@ class BaseRF_Gap(AbstractRF_Gap):
                 # print "debug RF =",self.getName(),"  phase=",(phase*180./math.pi - 180.)
             else:
                 sequence = self.getSequence()
-                accLattice = sequence.getLinacAccLattice()
+                accLattice = sequence.getAccLattice()
                 msg = (
                     "The BaseRF_Gap class. You have to run trackDesign on the LinacAccLattice first to initialize all RF Cavities' phases!"
                 )
@@ -303,7 +303,7 @@ class BaseRF_Gap(AbstractRF_Gap):
         beta_max = self.getParam("beta_max")
         if beta < beta_min or beta > beta_max:
             sequence = self.getSequence()
-            accLattice = sequence.getLinacAccLattice()
+            accLattice = sequence.getAccLattice()
             rfCavity = self.getRF_Cavity()
             msg = "The Python BaseRF_Gap class. The beta for SyncPart is not in the range [min:max]!"
             msg = msg + os.linesep
@@ -477,12 +477,12 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         # ---- The RF gap model - three points model
         self.cppGapModel = RfGapThreePointTTF()
 
-    def setLinacTracker(self, switch=True):
+    def setTracker(self, switch=True):
         """
         This method will switch RF gap model to slower one where transformations
         coefficients are calculated for each particle in the bunch.
         """
-        AbstractRF_Gap.setLinacTracker(self, switch)
+        AbstractRF_Gap.setTracker(self, switch)
         if switch:
             self.cppGapModel = RfGapThreePointTTF_slow()
         else:
@@ -578,7 +578,7 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         rfCavity = self.getRF_Cavity()
         if not rfCavity.isDesignSetUp():
             sequence = self.getSequence()
-            accLattice = sequence.getLinacAccLattice()
+            accLattice = sequence.getAccLattice()
             msg = "The AxisFieldRF_Gap class. "
             msg += "You have to run trackDesign on the LinacAccLattice"
             msg += "first to initialize all RF Cavities' phases!"
