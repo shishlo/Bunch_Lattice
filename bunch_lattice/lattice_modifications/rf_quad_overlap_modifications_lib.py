@@ -26,7 +26,7 @@ from orbit.utils import orbitFinalize
 
 # from orbit.py_linac.lattice import LinacApertureNode
 from orbit.py_linac.lattice import Quad, Drift
-from orbit.py_linac.lattice import BaseRF_Gap, AxisFieldRF_Gap
+from orbit.py_linac.lattice import BunchRF_Gap, AxisFieldRF_Gap
 from orbit.py_linac.lattice import OverlappingQuadsNode
 from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
 
@@ -52,7 +52,7 @@ def GetEngeFunction(quad):
         func = EngeFunction(length_param, acceptance_diameter_param, cutoff_level)
         return func
     else:
-        msg = "Inside the Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes Python function. "
+        msg = "Inside the Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes Python function. "
         msg += os.linesep
         msg += "Cannot create the EngeFunction for the quad!"
         msg += os.linesep
@@ -64,11 +64,11 @@ def GetEngeFunction(quad):
     return None
 
 
-def Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes(
+def Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes(
     accLattice, z_step, dir_location="", accSeq_Names=[], cavs_Names=[], EngeFunctionFactory=GetEngeFunction
 ):
     """
-    Function will replace  BaseRF_Gap nodes by AxisField_and_Quad_RF_Gap.
+    Function will replace  BunchRF_Gap nodes by AxisField_and_Quad_RF_Gap.
     It is assumed that AxisField_and_Quad_RF_Gap nodes do not overlap any
     others nodes (except Drifts). The location of the axis field
     data files are specified by dir_location input variable.
@@ -104,7 +104,7 @@ def Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes(
         accSeq = accLattice.getSequence(accSeq_Name)
         # print "debug ================== START seq=",accSeq.getName()
         if accSeq == None:
-            msg = "The Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes Python function. "
+            msg = "The Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes Python function. "
             msg += os.linesep
             msg += "Cannot find the acc. sequence with this name in the lattice!"
             msg += os.linesep
@@ -130,7 +130,7 @@ def Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes(
                 if cav.getName() in cavs_Names:
                     cavs_tmp.append(cav)
             cavs = cavs_tmp
-        # ---- let's check that all rf gaps are BaseRF_Gap instances
+        # ---- let's check that all rf gaps are BunchRF_Gap instances
         # ---- and create the dictionaries to account for new rf gaps later
         # ---- rf_gap_to_cavs_dict[rf_gap] = cav
         # ---- new_rf_gaps_arr_in_cav_dict[cav] = [new_AxisField_and_Quad_RF_Gap_0,..]
@@ -141,9 +141,9 @@ def Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes(
             new_rf_gaps_arr_in_cav_dict[cav] = []
             for rf_gap in rf_gaps:
                 rf_gap_to_cavs_dict[rf_gap] = cav
-                if not isinstance(rf_gap, BaseRF_Gap):
-                    msg = "The Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes function. "
-                    msg += "You are trying to replace the RF gap which is not BaseRF_Gap instance!"
+                if not isinstance(rf_gap, BunchRF_Gap):
+                    msg = "The Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes function. "
+                    msg += "You are trying to replace the RF gap which is not BunchRF_Gap instance!"
                     msg += os.linesep
                     msg = msg + "RF Gap =" + rf_gap.getName()
                     msg = msg + os.linesep
@@ -156,8 +156,8 @@ def Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes(
             rf_length_tolerance, accLattice, accSeq, dir_location, cavs
         )
         if len(rf_gap_ind_up_down_arr) == 0:
-            msg = "The Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes function. "
-            msg += "This Acc. Sequence does not have BaseRF_Gaps!"
+            msg = "The Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes function. "
+            msg += "This Acc. Sequence does not have BunchRF_Gaps!"
             msg += os.linesep
             msg += "It is better to use another method of the lattice modification!"
             msg += os.linesep
@@ -168,7 +168,7 @@ def Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes(
         # ---- Now we are going to build a new lattice with AxisField_and_Quad_RF_Gap
         # ---- and OverlappingQuadsNode classes. Even drifts will be replaced with
         # ---- these nodes to simplify the lattice structure. The original lattice
-        # ---- should have only drifts, quads, and BaseRF_Gaps as elements with
+        # ---- should have only drifts, quads, and BunchRF_Gaps as elements with
         # ---- non-zero length. If the user wants to include other sources of the EM
         # ---- fields, he/she has to create or modify the classes responsible for
         # ---- handling the overlapping EM fields.
@@ -427,7 +427,7 @@ def Get_quads_zeroLengthNodes_in_range(accSeq, node_ind_start, node_ind_end):
                 if child.getLength() == 0.0:
                     child_nodes.append(child)
                     # print "      debug child=",child.getName()," pos=",child.getPosition()
-        if not isinstance(node, BaseRF_Gap):
+        if not isinstance(node, BunchRF_Gap):
             length = node.getLength()
             if length == 0.0:
                 zero_length_nodes.append(node)
@@ -436,7 +436,7 @@ def Get_quads_zeroLengthNodes_in_range(accSeq, node_ind_start, node_ind_end):
                     quads.append(node)
                 else:
                     if not isinstance(node, Drift):
-                        msg = "The Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes function. "
+                        msg = "The Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes function. "
                         msg += "This Acc. Sequence has an element that "
                         msg += os.linesep
                         msg += "1. has non-zero length"

@@ -21,7 +21,7 @@ from orbit.py_linac.lattice import BaseLinacNode, LinacNode, LinacMagnetNode, Ma
 from orbit.py_linac.lattice import DCorrectorH, DCorrectorV, ThickKick
 from orbit.py_linac.lattice import Solenoid
 from orbit.py_linac.lattice import RF_Cavity, Sequence
-from orbit.py_linac.lattice import BaseRF_Gap
+from orbit.py_linac.lattice import BunchRF_Gap
 
 from orbit.py_linac.materials import VacuumWindowNode
 
@@ -210,7 +210,7 @@ class SNS_LinacLatticeFactory:
                     accSeq.addNode(accNode)
                 # ------------RF_Gap-----------------
                 elif node_type == "RFGAP":
-                    accNode = BaseRF_Gap(node_da.stringValue("name"))
+                    accNode = BunchRF_Gap(node_da.stringValue("name"))
                     accNode.setLength(0.0)
                     accNode.setParam("E0TL", params_da.doubleValue("E0TL"))
                     accNode.setParam("E0L", params_da.doubleValue("E0L"))
@@ -507,7 +507,7 @@ class SNS_LinacLatticeFactory:
             if isinstance(node, DCorrectorV):
                 self.makeDA_dcorrV(seq_da, node)
                 continue
-            if isinstance(node, BaseRF_Gap):
+            if isinstance(node, BunchRF_Gap):
                 self.makeDA_rf_gap(seq_da, node)
                 continue
             if isinstance(node, MarkerLinacNode):
