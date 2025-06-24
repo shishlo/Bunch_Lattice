@@ -1,8 +1,6 @@
-#!/usr/bin/env python
-
-# --------------------------------------------------------
-# This is a collection of aperture classes for linac lattices
-# --------------------------------------------------------
+# ---------------------------------------------------------------------
+# This is a collection of aperture classes for bunch tracking lattices
+# ---------------------------------------------------------------------
 
 import math
 import sys
@@ -11,16 +9,16 @@ import os
 # import the auxiliary classes
 from orbit.utils import orbitFinalize
 
-from orbit.py_linac.lattice import BaseLinacNode, Quad
-
 # import BaseAperture and Phase and Eneregy Apertures C++ classes
 from orbit.core.aperture import BaseAperture, PhaseAperture, EnergyAperture
 
 # ---- here we use only primitive aperture shapes - circle, ellipse, and rectangular
 from orbit.core.aperture import PrimitiveApertureShape
 
+# import acc. nodes
+from bunch_lattice.lattice.BunchAccNodes import BunchAccNode, Quad
 
-class LinacApertureNode(BaseLinacNode):
+class BunchApertureNode(BunchAccNode):
     """
     The aperture classes removes particles from bunch and places them in the lostbunch
     if their coordinates are not inside the aperture:
@@ -32,7 +30,7 @@ class LinacApertureNode(BaseLinacNode):
     """
 
     def __init__(self, shape, a, b, pos=0.0, c=0.0, d=0.0, name="aperture"):
-        BaseLinacNode.__init__(self, name)
+        BunchAccNode.__init__(self, name)
         self.shape = shape
         self.a = a
         self.b = b
@@ -53,7 +51,7 @@ class LinacApertureNode(BaseLinacNode):
             y_half_size = self.b
             apertureShape = PrimitiveApertureShape("rectangular", x_half_size, y_half_size)
         if apertureShape == None:
-            orbitFinalize("LinacApertureNode constructor. shape parameter should be 1,2,3 only.Stop")
+            orbitFinalize("BunchApertureNode constructor. shape parameter should be 1,2,3 only.Stop")
         # ------------------------------
         self.aperture.setApertureShape(apertureShape)
         self.aperture.name(name)
@@ -64,7 +62,7 @@ class LinacApertureNode(BaseLinacNode):
         """
         Method. Sets the name.
         """
-        BaseLinacNode.setName(self, name)
+        BunchAccNode.setName(self, name)
         self.aperture.name(name)
 
     def track(self, paramsDict):
@@ -83,7 +81,7 @@ class LinacApertureNode(BaseLinacNode):
         pass
 
     def setPosition(self, pos):
-        BaseLinacNode.setPosition(self, pos)
+        BunchAccNode.setPosition(self, pos)
         self.aperture.position(self.getPosition())
 
     def getNumberOfLostParticles(self):
@@ -97,41 +95,41 @@ class LinacApertureNode(BaseLinacNode):
         return self.aperture
 
 
-class CircleLinacApertureNode(LinacApertureNode):
+class CircleBunchApertureNode(BunchApertureNode):
     """
     The curcular aperture shape = 1
     """
 
     def __init__(self, radius, pos=0.0, c=0.0, d=0.0, name="aperture"):
-        LinacApertureNode.__init__(self, 1, radius, radius, pos, c, d, name)
+        BunchApertureNode.__init__(self, 1, radius, radius, pos, c, d, name)
 
 
-class EllipseLinacApertureNode(LinacApertureNode):
+class EllipseBunchApertureNode(BunchApertureNode):
     """
     The ellipse aperture shape = 2
     """
 
     def __init__(self, a, b, pos=0.0, c=0.0, d=0.0, name="aperture"):
-        LinacApertureNode.__init__(self, 2, a, b, pos, c, d, name)
+        BunchApertureNode.__init__(self, 2, a, b, pos, c, d, name)
 
 
-class RectangleLinacApertureNode(LinacApertureNode):
+class RectangleBunchApertureNode(BunchApertureNode):
     """
     The rectangle aperture shape = 3
     """
 
     def __init__(self, a, b, pos=0.0, c=0.0, d=0.0, name="aperture"):
-        LinacApertureNode.__init__(self, 3, a, b, pos, c, d, name)
+        BunchApertureNode.__init__(self, 3, a, b, pos, c, d, name)
 
 
-class LinacPhaseApertureNode(BaseLinacNode):
+class PhaseBunchApertureNode(BunchAccNode):
     """
     The phase aperture classes removes particles from bunch and places them in the lostbunch
     if their phases are not inside the min-max phases.
     """
 
     def __init__(self, frequency=402.5e6, name="phase_aperture"):
-        BaseLinacNode.__init__(self, name)
+        BunchAccNode.__init__(self, name)
         self.aperture = PhaseAperture(frequency)
         self.lost_particles_n = 0
 
@@ -148,7 +146,7 @@ class LinacPhaseApertureNode(BaseLinacNode):
         return self.aperture.getRfFrequency()
 
     def setPosition(self, pos):
-        BaseLinacNode.setPosition(self, pos)
+        BunchAccNode.setPosition(self, pos)
         self.aperture.setPosition(self.getPosition())
 
     def track(self, paramsDict):
@@ -171,14 +169,14 @@ class LinacPhaseApertureNode(BaseLinacNode):
         return self.lost_particles_n
 
 
-class LinacEnergyApertureNode(BaseLinacNode):
+class EnergyBunchApertureNode(BunchAccNode):
     """
     The phase aperture classes removes particles from bunch and places them in the lostbunch
     if their phases are not inside the min-max energy.
     """
 
     def __init__(self, name="energy_aperture"):
-        BaseLinacNode.__init__(self, name)
+        BunchAccNode.__init__(self, name)
         self.aperture = EnergyAperture()
         self.lost_particles_n = 0
         self.eKin_design = 0.0
@@ -190,7 +188,7 @@ class LinacEnergyApertureNode(BaseLinacNode):
         return self.aperture.getMinMaxEnergy()
 
     def setPosition(self, pos):
-        BaseLinacNode.setPosition(self, pos)
+        BunchAccNode.setPosition(self, pos)
         self.aperture.setPosition(self.getPosition())
 
     def track(self, paramsDict):

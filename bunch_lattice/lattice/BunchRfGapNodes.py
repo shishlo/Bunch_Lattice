@@ -1,10 +1,11 @@
 """
 This package is a collection of the RF gap node implementations.
-The RF Cavities and gaps in them are different from the ring RF.
 """
 
 import os
 import math
+
+from orbit.core.bunch import Bunch
 
 # ---- MPI module function and classes
 from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, MPI_Comm_rank, MPI_Bcast
@@ -17,27 +18,16 @@ from orbit.utils import speed_of_light
 # import from orbit c++ utilities
 from orbit.core.orbit_utils import Polynomial, Function
 
-# from LinacAccLattice import Sequence
-from orbit.py_linac.lattice.LinacAccNodes import BaseLinacNode
-
 # from linac import the RF gap classes
 from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF, RfGapThreePointTTF, BaseRfGap_slow, RfGapTTF_slow, RfGapThreePointTTF_slow
 
 # The abstract RF gap import
-from orbit.py_linac.lattice.LinacAccNodes import AbstractRF_Gap
+from bunch_lattice.lattice.BunchAccNodes import AbstractRF_Gap
 
-# import teapot base functions from wrapper around C++ functions
+# from BunchAccNodes import base bunch tracking node class 
+from bunch_lattice.lattice.BunchAccNodes import BunchAccNode
 
-# Import the linac specific tracking from linac_tracking. This module has
-# the following functions duplicated the original TEAPOT functions
-# drift - linac drift tracking
-# quad1 - linac quad linear part of tracking
-# quad2 - linac quad non-linear part of tracking
-
-from orbit.core.bunch import Bunch
-
-
-class BaseRF_Gap(AbstractRF_Gap):
+class BunchRF_Gap(AbstractRF_Gap):
     """
     The simplest RF gap representation. The only E0*T*L or E0*L and TTFs define
     all effects of the node. By default the Matrix RF Gap model is used.
@@ -52,7 +42,7 @@ class BaseRF_Gap(AbstractRF_Gap):
     The 'mode' parameter is a shift of the phase between two gaps in PI units.
     """
 
-    def __init__(self, name="baserfgap"):
+    def __init__(self, name="bunchrfgap"):
         """
         Constructor for the simplest RF gap.
         E0L and E0TL parameters are in GeV. Phases are in radians.
@@ -77,7 +67,7 @@ class BaseRF_Gap(AbstractRF_Gap):
         # -----------------------------
         self.addParam("rfCavity", None)
         self.addParam("EzFile", "no_file")
-        self.setType("baserfgap")
+        self.setType("bunchrfgap")
         self.__isFirstGap = False
         # ---- by default we use the TTF model
         # ---- which is a Transit-Time-Factor model from Parmila
@@ -118,12 +108,12 @@ class BaseRF_Gap(AbstractRF_Gap):
 
     def initialize(self):
         """
-        The BaseRF_Gap  class implementation
+        The BunchRF_Gap  class implementation
         of the AccNode class initialize() method.
         """
         nParts = self.getnParts()
         if nParts != 1:
-            msg = "The BaseRF_Gap RF gap should have 1 parts!"
+            msg = "The BunchRF_Gap RF gap should have 1 parts!"
             msg = msg + os.linesep
             msg = msg + "Method initialize():"
             msg = msg + os.linesep
@@ -217,7 +207,7 @@ class BaseRF_Gap(AbstractRF_Gap):
                 sequence = self.getSequence()
                 accLattice = sequence.getAccLattice()
                 msg = (
-                    "The BaseRF_Gap class. You have to run trackDesign on the LinacAccLattice first to initialize all RF Cavities' phases!"
+                    "The BunchRF_Gap class. You have to run trackDesign on the LinacAccLattice first to initialize all RF Cavities' phases!"
                 )
                 msg = msg + os.linesep
                 if accLattice != None:
@@ -305,7 +295,7 @@ class BaseRF_Gap(AbstractRF_Gap):
             sequence = self.getSequence()
             accLattice = sequence.getAccLattice()
             rfCavity = self.getRF_Cavity()
-            msg = "The Python BaseRF_Gap class. The beta for SyncPart is not in the range [min:max]!"
+            msg = "The Python BunchRF_Gap class. The beta for SyncPart is not in the range [min:max]!"
             msg = msg + os.linesep
             if accLattice != None:
                 msg = msg + "Lattice =" + accLattice.getName()
@@ -354,7 +344,7 @@ class RF_AxisFieldsStore:
     def addAxisFieldsForAccSeq(cls, accLattice, accSeqNamesList, dir_location=""):
         """
         This method add to the store the axis RF fields of all RF gap nodes
-        (BaseRF_Gap class instance with "EzFile" parameter) from the set of accSeqences.
+        (BunchRF_Gap class instance with "EzFile" parameter) from the set of accSeqences.
         The dir_location string variable will be added to the rf_gap.getParam("EzFile") to get
         the file names.
         """
@@ -435,7 +425,7 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
     default value is 1 cm. The minimal and maximal longitudinal coordinates z_min
     and z_max could be used directly from the axis field file or can be corrected
     externally to avoid overlapping of electric fields from neighboring gaps.
-    The instance of this class has the reference to the BaseRF_Gap instance and uses
+    The instance of this class has the reference to the BunchRF_Gap instance and uses
     it as a source of information.
     """
 

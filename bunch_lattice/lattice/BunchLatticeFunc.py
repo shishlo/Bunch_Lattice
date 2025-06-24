@@ -11,17 +11,13 @@ import sys
 # import general accelerator elements and lattice
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
-from orbit.py_linac.lattice import BaseLinacNode, Drift, Quad
-from orbit.py_linac.lattice import LinacMagnetNode
-from orbit.py_linac.lattice import AxisFieldRF_Gap
-from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
+# import acc. nodes
+from bunch_lattice.lattice.BunchAccNodes import MagnetNode, Quad, AbstractRF_Gap
 
 # import acc. nodes
-from orbit.py_linac.lattice.LinacAccNodes import Quad
-from orbit.py_linac.lattice.LinacRfGapNodes import AxisFieldRF_Gap
-
-from orbit.py_linac.lattice.LinacFieldOverlappingNodes import AxisField_and_Quad_RF_Gap
-from orbit.py_linac.lattice.LinacFieldOverlappingNodes import OverlappingQuadsNode
+from bunch_lattice.lattice.BunchRfGapNodes import AxisFieldRF_Gap
+from bunch_lattice.lattice.FieldOverlappingBunchNodes import AxisField_and_Quad_RF_Gap
+from bunch_lattice.lattice.FieldOverlappingBunchNodes import OverlappingQuadsBunchNode
 
 
 def GetGlobalQuadGradient(accLattice, z):
@@ -34,7 +30,7 @@ def GetGlobalQuadGradient(accLattice, z):
     (node, index, posBefore, posAfter) = accLattice.getNodeForPosition(z)
     if isinstance(node, Quad):
         return node.getParam("dB/dr")
-    if isinstance(node, OverlappingQuadsNode):
+    if isinstance(node, OverlappingQuadsBunchNode):
         G = node.getTotalField(z - (posBefore + posAfter) / 2)
         return G
     if isinstance(node, AxisField_and_Quad_RF_Gap):
@@ -54,7 +50,7 @@ def GetGlobalQuadGradientDerivative(accLattice, z):
     (node, index, posBefore, posAfter) = accLattice.getNodeForPosition(z)
     if isinstance(node, Quad):
         return 0.0
-    if isinstance(node, OverlappingQuadsNode):
+    if isinstance(node, OverlappingQuadsBunchNode):
         GP = node.getTotalFieldDerivative(z - (posBefore + posAfter) / 2)
         return GP
     if isinstance(node, AxisField_and_Quad_RF_Gap):
@@ -69,7 +65,7 @@ def GetGlobalRF_AxisField(accLattice, z):
     The service function for the overlapping RF fields package.
     Returns the RF field on the axis of the RF cavities
     for certain position in the lattice. If we have
-    the BaseRF_Gap instance we will get 0, because it is
+    the BunchRF_Gap instance we will get 0, because it is
     an element with zero length.
     """
     Ez = 0.0
@@ -195,7 +191,7 @@ def getAllMagnetsInLattice(accLattice):
         exactly). It uses external objects.
         """
         node = paramsDict["node"]
-        if isinstance(node, LinacMagnetNode):
+        if isinstance(node, MagnetNode):
             magnets.append(node)
 
     actions.addAction(accNodeExitAction, AccNode.EXIT)

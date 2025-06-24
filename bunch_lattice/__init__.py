@@ -1,8 +1,6 @@
-## \namespace orbit::py_linac
-## \Classes and packages of ORBIT Linac.
+## \Classes and packages of PyORBIT3 Base Lattice packages.
 ##
 
-import orbit.py_linac.linac_parsers
-
+from bunch_lattice import lattice
 __all__ = []
-__all__.append("linac_parsers")
+__all__.append("lattice")

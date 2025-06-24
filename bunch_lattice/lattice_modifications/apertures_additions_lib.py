@@ -10,7 +10,7 @@ import sys
 import os
 
 from orbit.py_linac.lattice import LinacApertureNode
-from orbit.py_linac.lattice import Quad, Drift, Bend, BaseRF_Gap, AxisFieldRF_Gap
+from orbit.py_linac.lattice import Quad, Drift, Bend, BunchRF_Gap, AxisFieldRF_Gap
 from orbit.py_linac.lattice import OverlappingQuadsNode
 from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
 
@@ -129,7 +129,7 @@ def Add_rfgap_apertures_to_lattice(accLattice, aprtNodes=[]):
     It returns the list of Aperture nodes.
     """
     node_pos_dict = accLattice.getNodePositionsDict()
-    rfgaps = accLattice.getNodesOfClasses([BaseRF_Gap, AxisFieldRF_Gap, AxisField_and_Quad_RF_Gap])
+    rfgaps = accLattice.getNodesOfClasses([BunchRF_Gap, AxisFieldRF_Gap, AxisField_and_Quad_RF_Gap])
     for node in rfgaps:
         if node.hasParam("aperture") and node.hasParam("aprt_type"):
             shape = node.getParam("aprt_type")

@@ -1,13 +1,13 @@
 """
-The general bunch tracking BaseAccLattice. It is a subclass of the Acclattice.
-It tracks the bunch through accelerator nodes. In addition to the
-usual accelerator lattice it has the sequences and RF cavities. The sequences 
-are containers for accelerator nodes (could be also RF gap nodes). RF cavities 
-are other containers for RF gap nodes that provide the time synchronization
-between RF gaps. The Cavity class keeps the refernce to RF gaps and a value of 
-the cavity amplitude as a whole element.
+The general accelerator Lattice. It is a subclass of the Acclattice.
+In addition to the usual accelerator lattice it has the sequences and 
+RF cavities. The sequences  are containers for accelerator nodes 
+(could be also RF gap nodes). RF cavities are other containers for RF gap nodes
+that provide the time synchronization between RF gaps. The Cavity class keeps 
+the refernce to RF gaps and a value of the cavity amplitude as a whole element.
 The Sequence class is used to keep iformation about positions of elements 
 that are inside.
+The subclass BunchLattice tracks the bunch through accelerator nodes.
 """
 
 import os
@@ -20,13 +20,12 @@ from orbit.utils import orbitFinalize, NamedObject, ParamsDictObject, phaseNearT
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
 # import acc. nodes
-from BaseAccNodes import Quad, AbstractRF_Gap, MarkerLinacNode
+from bunch_lattice.lattice.BunchAccNodes import Quad, AbstractRF_Gap, MarkerNode
 
 # import orbit Bunch
 from orbit.core.bunch import Bunch
 
-
-class BaseAccLattice(AccLattice):
+class Lattice(AccLattice):
     """
     The subclass of the AccLattice class. In the beginning the lattcie is empty.
     """
@@ -46,6 +45,7 @@ class BaseAccLattice(AccLattice):
         self.__sequences = []
         for node in self.getNodes():
             seq = node.getSequence()
+            if(seq == None): continue
             if not seq in self.__sequences:
                 self.__sequences.append(seq)
                 self.setAccLattice(self)
@@ -71,7 +71,7 @@ class BaseAccLattice(AccLattice):
             if isinstance(node, AbstractRF_Gap):
                 rf_cavity = node.getRF_Cavity()
                 if rf_cavity == None:
-                    msg = "LinacAccLattice.initialize() - Problem with RF gap!"
+                    msg = "Lattice.initialize() - Problem with RF gap!"
                     msg = msg + os.linesep
                     msg = msg + "RF gap=" + node.getName() + " does not have the parent RF cavity!"
                     msg = msg + os.linesep
@@ -80,19 +80,6 @@ class BaseAccLattice(AccLattice):
                     orbitFinalize(msg)
                 if not rf_cavity in self.__rfCavities:
                     self.__rfCavities.append(rf_cavity)
-
-    def setTracker(self, switch_to_tracker = "TEAPOT"):
-        """
-        This method will switch tracker module to the specific traker
-        for each node on the first level.
-        At this moment there are 2 different modules:
-        1. TEAPOT tracker - based onsecond order symplectic integration 
-        2. LINAC tracker  - used in linacs lattices to handle huge energy spread particles in the bunch.
-                            It should be used to simulate beam loss in linacs.
-        By default it is TEAPOT tracker. 
-        """
-        for node in self.getNodes():
-            node.setTracker(switch_to_tracker)
 
     def reverseOrder(self):
         """
@@ -132,22 +119,22 @@ class BaseAccLattice(AccLattice):
 	
     def getSubLattice(self, index_start=-1, index_stop=-1):
         """
-        It returns the new LinacAccLattice with children with indexes
+        It returns the new Lattice with children with indexes
         between index_start and index_stop inclusive.
         UNFORTUNATELY: At this moment it is not possible because the lattice has
         RF gap with unique references to RF cavities and Sequences which are
         bidirectional.
         """
-        msg = "The getSubLattice method of LinacAccLattice!"
+        msg = "The getSubLattice method of Lattice!"
         msg = msg + os.linesep
-        msg = msg + "That is not possible to get a sub-lattice for LinacAccLattice."
+        msg = msg + "That is not possible to get a sub-lattice for Lattice."
         msg = msg + os.linesep
         msg = msg + "Use the trackBunch method with start and end indexes."
         msg = msg + os.linesep
         msg = msg + "Stop."
         msg = msg + os.linesep
         orbitFinalize(msg)
-        return self._getSubLattice(BaseAccLattice(), index_start, index_stop)
+        return self._getSubLattice(Lattice(), index_start, index_stop)
 
     def trackActions(self, actionsContainer, paramsDict={}, index_start=-1, index_stop=-1):
         """
@@ -155,7 +142,7 @@ class BaseAccLattice(AccLattice):
         The method from the parent class was overloaded to provide the ability to stop tracking
         if necessary. In the linac, the synchronous particle could start to move backwards in the lattice
         because of the RF parameters are far away from the design values (acceptance scans).
-        The tracking will stop at a node that will define: paramsDict["stop tracking"] = False
+        The tracking will stop at a node that will define: paramsDict["stop tracking"] = True
         during the trackActions(...) call.
         """
         paramsDict["lattice"] = self
@@ -173,47 +160,6 @@ class BaseAccLattice(AccLattice):
             paramsDict["node"] = node
             paramsDict["parentNode"] = self
             node.trackActions(actionsContainer, paramsDict)
-
-    def trackBunch(self, bunch, paramsDict=None, actionContainer=None, index_start=-1, index_stop=-1):
-        """
-        It tracks the bunch through the lattice.
-        """
-        if actionContainer == None:
-            actionContainer = AccActionsContainer("Bunch Tracking")
-        if paramsDict == None:
-            paramsDict = {}
-        paramsDict["bunch"] = bunch
-
-        def track(paramsDict):
-            node = paramsDict["node"]
-            node.track(paramsDict)
-
-        actionContainer.addAction(track, AccActionsContainer.BODY)
-        self.trackActions(actionContainer, paramsDict, index_start, index_stop)
-        actionContainer.removeAction(track, AccActionsContainer.BODY)
-
-    def trackDesignBunch(self, bunch_in, paramsDict=None, actionContainer=None, index_start=-1, index_stop=-1):
-        """
-        This will track the design bunch through the lattice and set up RF Cavities times of
-        arrivals.
-        """
-        if actionContainer == None:
-            actionContainer = AccActionsContainer("Design Bunch Tracking")
-        if paramsDict == None:
-            paramsDict = {}
-        bunch = Bunch()
-        bunch_in.copyEmptyBunchTo(bunch)
-        bunch.getSyncParticle().time(0.0)
-        paramsDict["bunch"] = bunch
-
-        def trackDesign(localParamsDict):
-            node = localParamsDict["node"]
-            node.trackDesign(localParamsDict)
-
-        actionContainer.addAction(trackDesign, AccActionsContainer.BODY)
-        self.trackActions(actionContainer, paramsDict, index_start, index_stop)
-        actionContainer.removeAction(trackDesign, AccActionsContainer.BODY)
-        return bunch
 
     def getRF_Cavity(self, name):
         """Returns the cavity instance according to the name"""
@@ -269,9 +215,9 @@ class BaseAccLattice(AccLattice):
                         nodes.append(node)
         return nodes
 
-    def getNodesOfClasses(self, Classes, seq_names=[]):
+    def getNodesOfClasses(self, Class_arr, seq_names=[]):
         """
-        Returns the list of all nodes which are instances of any Class in Classes array
+        Returns the list of all nodes which are instances of any Class in Class_arr list
         or these nodes which are also belong to a particular sequence.
         """
         nSeqs = len(seq_names)
@@ -279,7 +225,7 @@ class BaseAccLattice(AccLattice):
         if nSeqs == 0:
             for node in self.getNodes():
                 info = False
-                for Class in Classes:
+                for Class in Class_arr:
                     if isinstance(node, Class):
                         info = True
                 if info:
@@ -290,7 +236,7 @@ class BaseAccLattice(AccLattice):
                 seq_nodes = accSeq.getNodes()
                 for node in seq_nodes:
                     info = False
-                    for Class in Classes:
+                    for Class in Class_arr:
                         if isinstance(node, Class):
                             info = True
                     if info:
@@ -347,6 +293,67 @@ class BaseAccLattice(AccLattice):
         (posBefore, posAfter) = node_pos_dict[node]
         return (node, index, posBefore, posAfter)
 
+class BunchLattice(AccLattice):
+    """
+    The subclass of the Lattice class. It is specific for Bunch tracking.
+    """
+
+    def __init__(self, name=None):
+        Lattice.__init__(self, name)
+    
+    def setTracker(self, switch_to_tracker = "TEAPOT"):
+        """
+        This method will switch tracker module to the specific traker
+        for each node on the first level.
+        At this moment there are 2 different modules:
+        1. TEAPOT tracker - based onsecond order symplectic integration 
+        2. LINAC tracker  - used in linacs lattices to handle huge energy spread particles in the bunch.
+                            It should be used to simulate beam loss in linacs.
+        By default it is TEAPOT tracker. 
+        """
+        for node in self.getNodes():
+            node.setTracker(switch_to_tracker)
+    
+    def trackBunch(self, bunch, paramsDict=None, actionContainer=None, index_start=-1, index_stop=-1):
+        """
+        It tracks the bunch through the lattice.
+        """
+        if actionContainer == None:
+            actionContainer = AccActionsContainer("Bunch Tracking")
+        if paramsDict == None:
+            paramsDict = {}
+        paramsDict["bunch"] = bunch
+
+        def track(paramsDict):
+            node = paramsDict["node"]
+            node.track(paramsDict)
+
+        actionContainer.addAction(track, AccActionsContainer.BODY)
+        self.trackActions(actionContainer, paramsDict, index_start, index_stop)
+        actionContainer.removeAction(track, AccActionsContainer.BODY)
+
+    def trackDesignBunch(self, bunch_in, paramsDict=None, actionContainer=None, index_start=-1, index_stop=-1):
+        """
+        This will track the design bunch through the lattice and set up RF Cavities times of
+        arrivals.
+        """
+        if actionContainer == None:
+            actionContainer = AccActionsContainer("Design Bunch Tracking")
+        if paramsDict == None:
+            paramsDict = {}
+        bunch = Bunch()
+        bunch_in.copyEmptyBunchTo(bunch)
+        bunch.getSyncParticle().time(0.0)
+        paramsDict["bunch"] = bunch
+
+        def trackDesign(localParamsDict):
+            node = localParamsDict["node"]
+            node.trackDesign(localParamsDict)
+
+        actionContainer.addAction(trackDesign, AccActionsContainer.BODY)
+        self.trackActions(actionContainer, paramsDict, index_start, index_stop)
+        actionContainer.removeAction(trackDesign, AccActionsContainer.BODY)
+        return bunch
 
 # ----------------------------------------------------------------
 # Classes that are specific for the bunch lattice model

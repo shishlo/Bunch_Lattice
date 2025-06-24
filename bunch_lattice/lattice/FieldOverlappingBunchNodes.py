@@ -11,9 +11,9 @@ import os
 
 from orbit.utils import orbitFinalize, phaseNearTargetPhase, phaseNearTargetPhaseDeg
 
-# ---- base linac nodes
-from orbit.py_linac.lattice.LinacAccNodes import AbstractRF_Gap
-from orbit.py_linac.lattice.LinacAccNodes import BaseLinacNode, Drift, Quad
+# ---- bunch nodes
+from bunch_lattice.lattice.BunchAccNodes import AbstractRF_Gap
+from bunch_lattice.lattice.BunchAccNodes import BunchAccNode, Drift, Quad
 
 # import teapot base functions from wrapper around C++ functions
 from orbit.teapot_base import TPB
@@ -76,13 +76,11 @@ class AxisField_and_Quad_RF_Gap(AbstractRF_Gap):
         # ---- If it is true then the this tracking will be in the reversed lattice
         self.reversed_lattice = False
 
-    def setTracker(self, switch=True):
+    def setSlowTracker(self, switch = True):
         """
         This method will switch RF gap model to slower one where transformations
         coefficients are calculated for each particle in the bunch.
         """
-        BaseLinacNode.setTracker(self, switch)
-        AbstractRF_Gap.setTracker(self, switch)
         if switch:
             self.cppGapModel = RfGapThreePointTTF_slow()
         else:
@@ -106,9 +104,9 @@ class AxisField_and_Quad_RF_Gap(AbstractRF_Gap):
         """
         return self.axis_field_rf_gap
 
-    def getBaseRF_Gap(self):
+    def getBunchRF_Gap(self):
         """
-        It returns the BaseRF_Gap instance for this gap.
+        It returns the BunchRF_Gap instance for this gap.
         """
         return self.axis_field_rf_gap.baserf_gap
 
@@ -527,16 +525,16 @@ class AxisField_and_Quad_RF_Gap(AbstractRF_Gap):
                     self.gap_phase_vs_z_arr[ind][1] = phaseNearTargetPhase(phase_gap, phase_gap1)
 
 
-class OverlappingQuadsNode(BaseLinacNode):
+class OverlappingQuadsBunchNode(BunchAccNode):
     """
     The class represent the set of quads with the overlapping fields.
     """
 
     def __init__(self, name="OverlappingQuads"):
         """
-        Constructor. Creates the OverlappingQuadsNode instance.
+        Constructor. Creates the OverlappingQuadsBunchNode instance.
         """
-        BaseLinacNode.__init__(self, name="OVRLPQ")
+        BunchAccNode.__init__(self, name="OVRLPQ")
         self.setType("OVRLPQ")
         self.setnParts(1)
         # ----quads_fields_arr is an array of [quad, fieldFunc, z_center_of_field]
@@ -585,7 +583,7 @@ class OverlappingQuadsNode(BaseLinacNode):
     def addQuad(self, quad, fieldFunc, z_center_of_field):
         """
         Adds the quad with the field function and the position.
-        The position of the quad is relative to the beginning of this OverlappingQuadsNode.
+        The position of the quad is relative to the beginning of this OverlappingQuadsBunchNode.
         """
         self.quads_fields_arr.append([quad, fieldFunc, z_center_of_field])
 
@@ -630,7 +628,7 @@ class OverlappingQuadsNode(BaseLinacNode):
 
     def initialize(self):
         """
-        The OverlappingQuadsNode class implementation
+        The OverlappingQuadsBunchNode class implementation
         of the AccNode class initialize() method.
         """
         nParts = self.getnParts()
@@ -641,7 +639,7 @@ class OverlappingQuadsNode(BaseLinacNode):
 
     def track(self, paramsDict):
         """
-        The  OverlappingQuadsNode class implementation of the AccNode class track(paramDict) method.
+        The  OverlappingQuadsBunchNode class implementation of the AccNode class track(paramDict) method.
         """
         index = self.getActivePartIndex()
         length = self.getLength(index)

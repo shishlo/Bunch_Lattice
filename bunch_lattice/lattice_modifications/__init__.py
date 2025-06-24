@@ -11,8 +11,8 @@ from orbit.py_linac.lattice_modifications.apertures_additions_lib import Add_qua
 from orbit.py_linac.lattice_modifications.apertures_additions_lib import Add_rfgap_apertures_to_lattice
 from orbit.py_linac.lattice_modifications.apertures_additions_lib import Add_bend_apertures_to_lattice
 
-from orbit.py_linac.lattice_modifications.rf_models_modifications_lib import Replace_BaseRF_Gap_to_AxisField_Nodes
-from orbit.py_linac.lattice_modifications.rf_quad_overlap_modifications_lib import Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes
+from orbit.py_linac.lattice_modifications.rf_models_modifications_lib import Replace_BunchRF_Gap_to_AxisField_Nodes
+from orbit.py_linac.lattice_modifications.rf_quad_overlap_modifications_lib import Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes
 from orbit.py_linac.lattice_modifications.quad_overlap_modifications_lib import Replace_Quads_to_OverlappingQuads_Nodes
 
 
@@ -35,8 +35,8 @@ __all__.append("GetLostDistributionArr")
 __all__.append("AddScrapersAperturesToLattice")
 __all__.append("Add_drift_apertures_to_lattice")
 __all__.append("AddMEBTChopperPlatesAperturesToSNS_Lattice")
-__all__.append("Replace_BaseRF_Gap_to_AxisField_Nodes")
-__all__.append("Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes")
+__all__.append("Replace_BunchRF_Gap_to_AxisField_Nodes")
+__all__.append("Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes")
 __all__.append("Replace_Quads_to_OverlappingQuads_Nodes")
 
 

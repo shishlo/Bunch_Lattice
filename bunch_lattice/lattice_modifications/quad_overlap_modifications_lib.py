@@ -44,7 +44,7 @@ def Replace_Quads_to_OverlappingQuads_Nodes(accLattice, z_step, accSeq_Names=[],
         accSeq = accLattice.getSequence(accSeq_Name)
         # print "debug ================== STAR seq=",accSeq.getName()
         if accSeq == None:
-            msg = "The Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes Python function. "
+            msg = "The Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes Python function. "
             msg += os.linesep
             msg += "Cannot find the acc. sequence with this name in the lattice!"
             msg += os.linesep
@@ -403,7 +403,7 @@ def Get_quads_zeroLengthNodes_in_range(accSeq, node_ind_start, node_ind_end):
                 quads.append(node)
             else:
                 if not isinstance(node, Drift):
-                    msg = "The Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes function. "
+                    msg = "The Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes function. "
                     msg += "This Acc. Sequence has an element that "
                     msg += os.linesep
                     msg += "1. has non-zero length"

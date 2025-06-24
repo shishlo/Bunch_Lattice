@@ -1,84 +1,72 @@
-## \namespace orbit::py_linac::lattice
-## \brief The base classes of ORBIT Linac lattice structure.
+## \brief The base classes of PyORBIT lattice structure.
 ##
 ## Classes:
-## - LinacAcclattice       - Class. The linac lattice.
-## - LinacAccNodes         - Module. Collection of the linac accelerator nodes: drifts, quads, RF gaps etc..
-## - LinacRfGapNodes       - Module. Collection of RF Gap models
+## - Lattice       - Class. The general lattice.
+## - BunchAccNodes         - Module. Collection of the accelerator nodes for bunch tracking: drifts, quads, RF gaps etc..
+## - BunchRfGapNodes       - Module. Collection of RF Gap models for bunch tracking
 
-from orbit.py_linac.lattice.LinacAccLatticeLib import LinacAccLattice, RF_Cavity, Sequence
+#---- Lattice library from file LatticeLib.py
+from bunch_lattice.lattice.LatticeLib import Lattice, BunchLattice, RF_Cavity, Sequence
 
-from orbit.py_linac.lattice.LinacAccNodes import BaseLinacNode, LinacNode, LinacMagnetNode
-from orbit.py_linac.lattice.LinacAccNodes import MarkerLinacNode, Drift, Quad, AbstractRF_Gap, Bend
-from orbit.py_linac.lattice.LinacAccNodes import Solenoid
-from orbit.py_linac.lattice.LinacAccNodes import DCorrectorH, DCorrectorV
-from orbit.py_linac.lattice.LinacAccNodes import ThickKick
+#---- AccNodes from BunchAccNodes.py
+from bunch_lattice.lattice.BunchAccNodes import BunchAccNode
+from bunch_lattice.lattice.BunchAccNodes import MarkerNode, Drift, Quad, AbstractRF_Gap, Bend
+from bunch_lattice.lattice.BunchAccNodes import Solenoid
+from bunch_lattice.lattice.BunchAccNodes import DCorrectorH, DCorrectorV
+from bunch_lattice.lattice.BunchAccNodes import ThickKick
 
-from orbit.py_linac.lattice.LinacRfGapNodes import BaseRF_Gap, AxisFieldRF_Gap, RF_AxisFieldsStore
+#---- Lattice functions from LatticeFunc.py
+from bunch_lattice.lattice.BunchLatticeFunc import GetGlobalQuadGradient
+from bunch_lattice.lattice.BunchLatticeFunc import GetGlobalQuadGradientDerivative
+from bunch_lattice.lattice.BunchLatticeFunc import GetGlobalRF_AxisField
+from bunch_lattice.lattice.BunchLatticeFunc import getNodeForNameFromWholeLattice
+from bunch_lattice.lattice.BunchLatticeFunc import getNodePosDictForWholeLattice
+from bunch_lattice.lattice.BunchLatticeFunc import getAllNodesInLattice
+from bunch_lattice.lattice.BunchLatticeFunc import getAllMagnetsInLattice
 
-from orbit.py_linac.lattice.LinacApertureNodes import LinacApertureNode
-from orbit.py_linac.lattice.LinacApertureNodes import CircleLinacApertureNode
-from orbit.py_linac.lattice.LinacApertureNodes import EllipseLinacApertureNode
-from orbit.py_linac.lattice.LinacApertureNodes import RectangleLinacApertureNode
-from orbit.py_linac.lattice.LinacApertureNodes import LinacPhaseApertureNode
-from orbit.py_linac.lattice.LinacApertureNodes import LinacEnergyApertureNode
+#---- Aperture nodes from BunchApertureNodes.py
+from bunch_lattice.lattice.BunchApertureNodes import BunchApertureNode
+from bunch_lattice.lattice.BunchApertureNodes import CircleBunchApertureNode
+from bunch_lattice.lattice.BunchApertureNodes import EllipseBunchApertureNode
+from bunch_lattice.lattice.BunchApertureNodes import RectangleBunchApertureNode
+from bunch_lattice.lattice.BunchApertureNodes import PhaseBunchApertureNode
+from bunch_lattice.lattice.BunchApertureNodes import EnergyBunchApertureNode
 
-from orbit.py_linac.lattice.LinacFieldOverlappingNodes import AxisField_and_Quad_RF_Gap
-from orbit.py_linac.lattice.LinacFieldOverlappingNodes import OverlappingQuadsNode
+#---- Overlapping bunch tracking nodes from FieldOverlappingBunchNodes.py
+from bunch_lattice.lattice.FieldOverlappingBunchNodes import AxisField_and_Quad_RF_Gap
+from bunch_lattice.lattice.FieldOverlappingBunchNodes import OverlappingQuadsBunchNode
 
-from orbit.py_linac.lattice.LinacAccLatticeFunc import GetGlobalQuadGradient
-from orbit.py_linac.lattice.LinacAccLatticeFunc import GetGlobalQuadGradientDerivative
-from orbit.py_linac.lattice.LinacAccLatticeFunc import GetGlobalRF_AxisField
-from orbit.py_linac.lattice.LinacAccLatticeFunc import getNodeForNameFromWholeLattice
-from orbit.py_linac.lattice.LinacAccLatticeFunc import getNodePosDictForWholeLattice
-from orbit.py_linac.lattice.LinacAccLatticeFunc import getAllNodesInLattice
-from orbit.py_linac.lattice.LinacAccLatticeFunc import getAllMagnetsInLattice
+#---- RF gap bunch tracking nodes from BunchRfGapNodes.py
+from bunch_lattice.lattice.BunchRfGapNodes import BunchRF_Gap, AxisFieldRF_Gap, RF_AxisFieldsStore
 
+"""
 from orbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatrixGenNode
 from orbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatricesController
 
 from orbit.py_linac.lattice.LinacDiagnosticsNodes import LinacBPM
+"""
 
 __all__ = []
-__all__.append("LinacAccLattice")
 
-# AccNodes
-__all__.append("BaseLinacNode")
-__all__.append("LinacNode")
-__all__.append("LinacMagnetNode")
-__all__.append("MarkerLinacNode")
-__all__.append("Drift")
-__all__.append("Quad")
-__all__.append("AbstractRF_Gap")
-__all__.append("DCorrectorH")
-__all__.append("DCorrectorV")
-__all__.append("ThickKick")
-__all__.append("Bend")
-__all__.append("Solenoid")
-
-
-__all__.append("LinacApertureNode")
-__all__.append("CircleLinacApertureNode")
-__all__.append("EllipseLinacApertureNode")
-__all__.append("RectangleLinacApertureNode")
-__all__.append("LinacPhaseApertureNode")
-__all__.append("LinacEnergyApertureNode")
-
-
+#---- Lattice library from file LatticeLib.py
+__all__.append("Lattice")
+__all__.append("BunchLattice")
 __all__.append("RF_Cavity")
 __all__.append("Sequence")
 
-__all__.append("LinacStructureTree")
-__all__.append("LinacStructureSeq")
-__all__.append("LinacStuctureNode")
+#---- AccNodes from BunchAccNodes.py
+__all__.append("BunchAccNode")
+__all__.append("MarkerNode")
+__all__.append("Drift")
+__all__.append("Quad")
+__all__.append("AbstractRF_Gap")
+__all__.append("Bend")
+__all__.append("Solenoid")
+__all__.append("DCorrectorH")
+__all__.append("DCorrectorV")
+__all__.append("ThickKick")
 
-__all__.append("BaseRF_Gap")
-__all__.append("AxisFieldRF_Gap")
-__all__.append("RF_AxisFieldsStore")
-
-__all__.append("AxisField_and_Quad_RF_Gap")
-__all__.append("OverlappingQuadsNode")
-
+#---- Lattice functions from LatticeFunc.py
 __all__.append("GetGlobalQuadGradient")
 __all__.append("GetGlobalQuadGradientDerivative")
 __all__.append("GetGlobalRF_AxisField")
@@ -87,7 +75,26 @@ __all__.append("getNodePosDictForWholeLattice")
 __all__.append("getAllNodesInLattice")
 __all__.append("getAllMagnetsInLattice")
 
+#---- Aperture bunch tracking nodes from BunchApertureNodes.py
+__all__.append("BunchApertureNode")
+__all__.append("CircleBunchApertureNode")
+__all__.append("EllipseBunchApertureNode")
+__all__.append("RectangleBunchApertureNode")
+__all__.append("PhaseBunchApertureNode")
+__all__.append("EnergyBunchApertureNode")
+
+#---- Overlapping bunch tracking nodes from FieldOverlappingBunchNodes.py
+__all__.append("AxisField_and_Quad_RF_Gap")
+__all__.append("OverlappingQuadsBunchNode")
+
+#---- RF gap and auxilary classes from BunchRfGapNodes.py
+__all__.append("BunchRF_Gap")
+__all__.append("AxisFieldRF_Gap")
+__all__.append("RF_AxisFieldsStore")
+
+"""
 __all__.append("LinacTrMatrixGenNode")
 __all__.append("LinacTrMatricesController")
 
 __all__.append("LinacBPM")
+"""

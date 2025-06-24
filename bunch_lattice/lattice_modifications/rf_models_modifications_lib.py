@@ -26,14 +26,14 @@ from orbit.utils import orbitFinalize
 
 # from orbit.py_linac.lattice import LinacApertureNode
 from orbit.py_linac.lattice import Quad, Drift
-from orbit.py_linac.lattice import BaseRF_Gap, AxisFieldRF_Gap
+from orbit.py_linac.lattice import BunchRF_Gap, AxisFieldRF_Gap
 
 from orbit.core.orbit_utils import Function, SplineCH, GaussLegendreIntegrator
 
 
-def Replace_BaseRF_Gap_to_AxisField_Nodes(accLattice, z_step, dir_location="", accSeq_Names=[], cavs_Names=[]):
+def Replace_BunchRF_Gap_to_AxisField_Nodes(accLattice, z_step, dir_location="", accSeq_Names=[], cavs_Names=[]):
     """
-    Function will replace  BaseRF_Gap nodes by AxisFieldRF_Gap.
+    Function will replace  BunchRF_Gap nodes by AxisFieldRF_Gap.
     It is assumed that AxisFieldRF_Gap nodes do not overlap any
     others nodes (except Drifts).
     The replacement will be performed only for specified sequences.
@@ -60,7 +60,7 @@ def Replace_BaseRF_Gap_to_AxisField_Nodes(accLattice, z_step, dir_location="", a
     for accSeq_Name in accSeq_Names:
         accSeq = accLattice.getSequence(accSeq_Name)
         if accSeq == None:
-            msg = "The Replace_BaseRF_Gap_to_AxisField_Nodes Python function. "
+            msg = "The Replace_BunchRF_Gap_to_AxisField_Nodes Python function. "
             msg += "Cannot find the acc. sequence with this name in the lattice!"
             msg += os.linesep
             msg = msg + "accSeq name = " + accSeq_Name
@@ -80,13 +80,13 @@ def Replace_BaseRF_Gap_to_AxisField_Nodes(accLattice, z_step, dir_location="", a
                 if cav.getName() in cavs_Names:
                     cavs_tmp.append(cav)
                 cavs = cavs_tmp
-        # ---- let's check that all rf gaps are BaseRF_Gap instances
+        # ---- let's check that all rf gaps are BunchRF_Gap instances
         for cav in cavs:
             rf_gaps = cav.getRF_GapNodes()
             for rf_gap in rf_gaps:
-                if not isinstance(rf_gap, BaseRF_Gap):
-                    msg = "The Replace_BaseRF_Gap_to_AxisField_Nodes Python function. "
-                    msg += "You are trying to replace the RF gap which is not BaseRF_Gap instance!"
+                if not isinstance(rf_gap, BunchRF_Gap):
+                    msg = "The Replace_BunchRF_Gap_to_AxisField_Nodes Python function. "
+                    msg += "You are trying to replace the RF gap which is not BunchRF_Gap instance!"
                     msg += os.linesep
                     msg = msg + "RF Gap =" + rf_gap.getName()
                     msg = msg + os.linesep
@@ -114,7 +114,7 @@ def Replace_BaseRF_Gap_to_AxisField_Nodes(accLattice, z_step, dir_location="", a
                     (gap_pos_start, gap_pos_end) = node_pos_dict[rf_gap]
                     (z_min, z_max) = af_rf_gap_dict[rf_gap].getZ_Min_Max()
                     (node_pos_start, node_pos_end) = node_pos_dict[node]
-                    msg = "The Replace_BaseRF_Gap_to_AxisField_Nodes Python function. "
+                    msg = "The Replace_BunchRF_Gap_to_AxisField_Nodes Python function. "
                     msg += os.linesep
                     msg += "The RF gap field covers the non-drift node! Stop!"
                     msg += os.linesep
@@ -241,7 +241,7 @@ def Make_AxisFieldRF_Gaps_and_Find_Neihbor_Nodes(rf_length_tolerance, accLattice
     af_rf_gap_dict[rf_gap] = AxisFieldRF_Gap(rf_gap)
     and
     rf_gap_ind_up_down_arr[[rf_gap,gap_ind,drift_down_ind,drift_up_ind],...]
-    where rf_gap is a BaseRF_Gap instance, and indexes drift_down_ind and
+    where rf_gap is a BunchRF_Gap instance, and indexes drift_down_ind and
     drift_up_ind are the indexes covering the edges of the axis filed of the
     particular AxisFieldRF_Gap.
     """
@@ -276,7 +276,7 @@ def Make_AxisFieldRF_Gaps_and_Find_Neihbor_Nodes(rf_length_tolerance, accLattice
             af_rf_gap_dict[rf_gap].setZ_Min_Max(z_min_new, z_max_new)
             msg = "debug =============== WARNING  START ================ RF Gap=" + rf_gap.getName()
             msg += os.linesep
-            msg += "Inside the Replace_BaseRF_Gap_to_AxisField_Nodes Python function. "
+            msg += "Inside the Replace_BunchRF_Gap_to_AxisField_Nodes Python function. "
             msg += os.linesep
             msg += "The RF gap field  goes outside the start of the  AccSequence = " + accSeq.getName()
             msg += os.linesep
@@ -312,7 +312,7 @@ def Make_AxisFieldRF_Gaps_and_Find_Neihbor_Nodes(rf_length_tolerance, accLattice
                 # print "debug gap0=",rf_gap0.getName()," gap1=",rf_gap1.getName()," delta=",delta_z
             else:
                 if delta_z > 0.0:
-                    msg = "The Replace_BaseRF_Gap_to_AxisField_Nodes Python function. "
+                    msg = "The Replace_BunchRF_Gap_to_AxisField_Nodes Python function. "
                     msg += os.linesep
                     msg += "The RF gap field overlaps more than rf_length_tolerance[mm]= " + str(1000.0 * rf_length_tolerance)
                     msg += os.linesep
@@ -345,7 +345,7 @@ def Make_AxisFieldRF_Gaps_and_Find_Neihbor_Nodes(rf_length_tolerance, accLattice
     rf_gap_ind_dict = {}
     for node_ind in range(len(nodes)):
         node = nodes[node_ind]
-        if isinstance(node, BaseRF_Gap):
+        if isinstance(node, BunchRF_Gap):
             rf_gap_ind_dict[node] = node_ind
     # -------------------------------------
     rf_gap_ind_up_down_arr = []
@@ -380,7 +380,7 @@ def Make_AxisFieldRF_Gaps_and_Find_Neihbor_Nodes(rf_length_tolerance, accLattice
                         af_rf_gap_dict[rf_gap].setZ_Min_Max(z_min_new, z_max_new)
                         msg = "debug =============== WARNING  START ================ RF Gap=" + rf_gap.getName()
                         msg += os.linesep
-                        msg += "Inside the Replace_BaseRF_Gap_to_AxisField_Nodes Python function. "
+                        msg += "Inside the Replace_BunchRF_Gap_to_AxisField_Nodes Python function. "
                         msg += os.linesep
                         msg += "The RF gap field overlaps the first element in AccSequence."
                         msg += os.linesep
@@ -416,7 +416,7 @@ def Make_AxisFieldRF_Gaps_and_Find_Neihbor_Nodes(rf_length_tolerance, accLattice
                 if drift_up_ind > len(nodes) - 1:
                     if gap_pos_start + z_max > node_pos_end:
                         node = nodes[drift_up_ind - 1]
-                        msg = "The Replace_BaseRF_Gap_to_AxisField_Nodes Python function. "
+                        msg = "The Replace_BunchRF_Gap_to_AxisField_Nodes Python function. "
                         msg += os.linesep
                         msg += "The RF gap field overlaps the last element in AccSequence."
                         msg += os.linesep
