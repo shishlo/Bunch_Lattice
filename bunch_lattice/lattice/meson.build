@@ -1,20 +1,17 @@
-
-
-
 py_sources = files([
-    'LinacFieldOverlappingNodes.py',
-	'LinacAccLatticeLib.py',
-	'LinacTransportMatrixGenNodes.py',
-	'LinacAccNodes.py',
-	'__init__.py',
-	'LinacAccLatticeFunc.py',
-	'LinacApertureNodes.py',
-	'LinacDiagnosticsNodes.py',
-	'LinacRfGapNodes.py'
+    '__init__.py',
+    'LatticeLib.py',
+    'BunchAccNodes.py',
+    'BunchLatticeFunc.py',
+    'BunchRfGapNodes.py',
+    'BunchApertureNodes.py',
+    'FieldOverlappingBunchNodes.py',
+    'TransportMatrixGenBunchNodes.py',
+    'LinacDiagnosticsNodes.py'
 ])
 
 python.install_sources(
     py_sources,
     subdir: 'orbit/py_linac/lattice',
     # pure: true,
-)        
+)
