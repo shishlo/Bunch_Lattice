@@ -1,7 +1,7 @@
 ## \brief The base classes of PyORBIT lattice structure.
 ##
 ## Classes:
-## - Lattice       - Class. The general lattice.
+## - Lattice               - Class. The general lattice.
 ## - BunchAccNodes         - Module. Collection of the accelerator nodes for bunch tracking: drifts, quads, RF gaps etc..
 ## - BunchRfGapNodes       - Module. Collection of RF Gap models for bunch tracking
 
@@ -39,12 +39,11 @@ from bunch_lattice.lattice.FieldOverlappingBunchNodes import OverlappingQuadsBun
 #---- RF gap bunch tracking nodes from BunchRfGapNodes.py
 from bunch_lattice.lattice.BunchRfGapNodes import BunchRF_Gap, AxisFieldRF_Gap, RF_AxisFieldsStore
 
-"""
-from orbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatrixGenNode
-from orbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatricesController
+#---- Transport matrix generators from TransportMatrixGenBunchNodes.py
+from bunch_lattice.lattice.TransportMatrixGenBunchNodes import TrMatrixGenBunchNode
+from bunch_lattice.lattice.TransportMatrixGenBunchNodes import TrMatricesController
 
-from orbit.py_linac.lattice.LinacDiagnosticsNodes import LinacBPM
-"""
+from bunch_lattice.lattice.LinacDiagnosticsNodes import LinacBPM
 
 __all__ = []
 
@@ -92,9 +91,8 @@ __all__.append("BunchRF_Gap")
 __all__.append("AxisFieldRF_Gap")
 __all__.append("RF_AxisFieldsStore")
 
-"""
-__all__.append("LinacTrMatrixGenNode")
-__all__.append("LinacTrMatricesController")
+#---- Transport matrix generators from TransportMatrixGenBunchNodes.py
+__all__.append("TrMatrixGenBunchNode")
+__all__.append("TrMatricesController")
 
 __all__.append("LinacBPM")
-"""

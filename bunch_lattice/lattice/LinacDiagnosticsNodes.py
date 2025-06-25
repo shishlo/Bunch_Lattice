@@ -18,11 +18,11 @@ from orbit.utils import speed_of_light
 from orbit.core.orbit_utils import Polynomial, Function
 
 # from LinacAccLattice import Sequence
-from orbit.py_linac.lattice.LinacAccLatticeLib import Sequence
-from orbit.py_linac.lattice.LinacAccNodes import BaseLinacNode, LinacNode
+from bunch_lattice.lattice.LatticeLib import Sequence
+from bunch_lattice.lattice.BunchAccNodes import BunchAccNode
 
 
-class LinacBPM(BaseLinacNode):
+class LinacBPM(BunchAccNode):
     """
     The linac BPM representation. It calculates the average x,y, and phases
     of all particles in the bunch, and the amplitude signal which is an amplitude
@@ -34,7 +34,7 @@ class LinacBPM(BaseLinacNode):
     """
 
     def __init__(self, frequency=805.0e6, name="BPM"):
-        BaseLinacNode.__init__(self, name)
+        BunchAccNode.__init__(self, name)
         self.setType("BPM")
         self.frequency = 805.0e6
         self.phase_hist_arr = []

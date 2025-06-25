@@ -19,14 +19,14 @@ from orbit.utils import orbitFinalize
 # import general accelerator elements and lattice
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
-from orbit.py_linac.lattice import MarkerLinacNode
+from bunch_lattice.lattice import BunchAccNode
 
 from orbit.core.orbit_utils import bunch_utils_functions
 
 from orbit.core.orbit_utils import Matrix
 
 
-class LinacTrMatrixGenNode(MarkerLinacNode):
+class TrMatrixGenBunchNode(BunchAccNode):
     """
     Linac Accelerator Nodes for Transport Matrices generation.
     These nodes are using thethe Initial Coordinates particles Attrubutes.
@@ -39,7 +39,7 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
     def __init__(self, trMatricesController, name="TrMatrixGen"):
         if name == "TrMatrixGen":
             name += name + ":" + str(trMatricesController.getCount())
-        MarkerLinacNode.__init__(self, name)
+        BunchAccNode.__init__(self, name)
         self.trMatricesController = trMatricesController
         self.trMtrxNode_ind = trMatricesController.getCount()
         self.use_twiss_weight_x = 0
@@ -60,7 +60,7 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
 
     def getTrMatricesController(self):
         """
-        Returns the LinacTrMatricesController that keeps the references to the TrMatrxGenNodes.
+        Returns the TrMatricesController that keeps the references to the TrMatrxGenNodes.
         """
         return self.trMatricesController
 
@@ -162,7 +162,7 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
 
     def getTwoNodes(self):
         """
-        Returns two LinacTrMatrixGenNode nodes. The transport matrix is between these nodes.
+        Returns two TrMatrixGenBunchNode nodes. The transport matrix is between these nodes.
         """
         node0 = self
         if self.trMtrxNode_ind > 0:
@@ -186,9 +186,9 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
             print(" ")
 
 
-class LinacTrMatricesController:
+class TrMatricesController:
     """
-    LinacTrMatricesController keeps the references to the LinacTrMatrixGenNode
+    TrMatricesController keeps the references to the TrMatrixGenBunchNode
     instances.
     """
 
@@ -215,9 +215,9 @@ class LinacTrMatricesController:
             node = self.trMatrxNodes[node_ind]
             node.setInternalIndex(node_ind)
 
-    def addTrMatrixGenNodes(self, accLattice, node_or_nodes, place=MarkerLinacNode.ENTRANCE):
+    def addTrMatrixGenNodes(self, accLattice, node_or_nodes, place=BunchAccNode.ENTRANCE):
         """
-        Adds the LinacTrMatrixGenNode to the nodes as child nodes.
+        Adds the TrMatrixGenBunchNode to the nodes as child nodes.
         """
         nodes = []
         if type(node_or_nodes) in [tuple, list]:
@@ -227,7 +227,7 @@ class LinacTrMatricesController:
             nodes.append(node_or_nodes)
         # -----------------------------
         for node in nodes:
-            trMatrxGenNode = LinacTrMatrixGenNode(self, node.getName() + ":trMatrx")
+            trMatrxGenNode = TrMatrixGenBunchNode(self, node.getName() + ":trMatrx")
             node.addChildNode(trMatrxGenNode, place)
         # ----- set up the position of the TrMatrix nodes
         actions = AccActionsContainer()
@@ -237,7 +237,7 @@ class LinacTrMatricesController:
             Nonbound function. Sets the position of the TrMatrix nodes.
             """
             node = paramsDict["node"]
-            if isinstance(node, LinacTrMatrixGenNode):
+            if isinstance(node, TrMatrixGenBunchNode):
                 pos = paramsDict["path_length"]
                 node.setPosition(pos)
 
@@ -248,12 +248,12 @@ class LinacTrMatricesController:
 
     def addTrMatrixGenNodesAtEntrance(self, accLattice, node_or_nodes):
         """
-        Adds the LinacTrMatrixGenNode to the nodes as child nodes at the entrance.
+        Adds the TrMatrixGenBunchNode to the nodes as child nodes at the entrance.
         """
-        self.addTrMatrixGenNodes(accLattice, node_or_nodes, MarkerLinacNode.ENTRANCE)
+        self.addTrMatrixGenNodes(accLattice, node_or_nodes, BunchAccNode.ENTRANCE)
 
     def addTrMatrixGenNodesAtExit(self, accLattice, node_or_nodes):
         """
-        Adds the LinacTrMatrixGenNode to the nodes as child nodes at the exit.
+        Adds the TrMatrixGenBunchNode to the nodes as child nodes at the exit.
         """
-        self.addTrMatrixGenNodes(accLattice, node_or_nodes, MarkerLinacNode.EXIT)
+        self.addTrMatrixGenNodes(accLattice, node_or_nodes, BunchAccNode.EXIT)
