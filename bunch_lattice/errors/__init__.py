@@ -20,7 +20,6 @@ from bunch_lattice.errors.ErrorNodesAndControllersLib import ErrorStraightRotati
 
 __all__ = []
 
-
 # ---- Error nodes classes
 __all__.append("AccErrorNode")
 __all__.append("ErrorLongitudinalDisplacementNode")

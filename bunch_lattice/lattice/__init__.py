@@ -1,43 +1,45 @@
+""" Classes for Lattice and Acccelerator Nodes """
+
 #---- Lattice library from file LatticeLib.py
-from bunch_lattice.lattice.LatticeLib import Lattice, BunchLattice, RF_Cavity, Sequence
+from .LatticeLib import Lattice, BunchLattice, RF_Cavity, Sequence
 
 #---- AccNodes from BunchAccNodes.py
-from bunch_lattice.lattice.BunchAccNodes import BunchAccNode
-from bunch_lattice.lattice.BunchAccNodes import MagnetNode
-from bunch_lattice.lattice.BunchAccNodes import MarkerNode, Drift, Quad, AbstractRF_Gap, Bend
-from bunch_lattice.lattice.BunchAccNodes import Solenoid
-from bunch_lattice.lattice.BunchAccNodes import DCorrectorH, DCorrectorV
-from bunch_lattice.lattice.BunchAccNodes import ThickKick
+from .BunchAccNodes import BunchAccNode
+from .BunchAccNodes import MagnetNode
+from .BunchAccNodes import MarkerNode, Drift, Quad, AbstractRF_Gap, Bend
+from .BunchAccNodes import Solenoid
+from .BunchAccNodes import DCorrectorH, DCorrectorV
+from .BunchAccNodes import ThickKick
 
 #---- Lattice functions from LatticeFunc.py
-from bunch_lattice.lattice.BunchLatticeFunc import GetGlobalQuadGradient
-from bunch_lattice.lattice.BunchLatticeFunc import GetGlobalQuadGradientDerivative
-from bunch_lattice.lattice.BunchLatticeFunc import GetGlobalRF_AxisField
-from bunch_lattice.lattice.BunchLatticeFunc import getNodeForNameFromWholeLattice
-from bunch_lattice.lattice.BunchLatticeFunc import getNodePosDictForWholeLattice
-from bunch_lattice.lattice.BunchLatticeFunc import getAllNodesInLattice
-from bunch_lattice.lattice.BunchLatticeFunc import getAllMagnetsInLattice
+from .BunchLatticeFunc import GetGlobalQuadGradient
+from .BunchLatticeFunc import GetGlobalQuadGradientDerivative
+from .BunchLatticeFunc import GetGlobalRF_AxisField
+from .BunchLatticeFunc import getNodeForNameFromWholeLattice
+from .BunchLatticeFunc import getNodePosDictForWholeLattice
+from .BunchLatticeFunc import getAllNodesInLattice
+from .BunchLatticeFunc import getAllMagnetsInLattice
 
 #---- Aperture nodes from BunchApertureNodes.py
-from bunch_lattice.lattice.BunchApertureNodes import BunchApertureNode
-from bunch_lattice.lattice.BunchApertureNodes import CircleBunchApertureNode
-from bunch_lattice.lattice.BunchApertureNodes import EllipseBunchApertureNode
-from bunch_lattice.lattice.BunchApertureNodes import RectangleBunchApertureNode
-from bunch_lattice.lattice.BunchApertureNodes import PhaseBunchApertureNode
-from bunch_lattice.lattice.BunchApertureNodes import EnergyBunchApertureNode
+from .BunchApertureNodes import BunchApertureNode
+from .BunchApertureNodes import CircleBunchApertureNode
+from .BunchApertureNodes import EllipseBunchApertureNode
+from .BunchApertureNodes import RectangleBunchApertureNode
+from .BunchApertureNodes import PhaseBunchApertureNode
+from .BunchApertureNodes import EnergyBunchApertureNode
 
 #---- Overlapping bunch tracking nodes from FieldOverlappingBunchNodes.py
-from bunch_lattice.lattice.FieldOverlappingBunchNodes import AxisField_and_Quad_RF_Gap
-from bunch_lattice.lattice.FieldOverlappingBunchNodes import OverlappingQuadsBunchNode
+from .FieldOverlappingBunchNodes import AxisField_and_Quad_RF_Gap
+from .FieldOverlappingBunchNodes import OverlappingQuadsBunchNode
 
 #---- RF gap bunch tracking nodes from BunchRfGapNodes.py
-from bunch_lattice.lattice.BunchRfGapNodes import BunchRF_Gap, AxisFieldRF_Gap, RF_AxisFieldsStore
+from .BunchRfGapNodes import BunchRF_Gap, AxisFieldRF_Gap, RF_AxisFieldsStore
 
 #---- Transport matrix generators from TransportMatrixGenBunchNodes.py
-from bunch_lattice.lattice.TransportMatrixGenBunchNodes import TrMatrixGenBunchNode
-from bunch_lattice.lattice.TransportMatrixGenBunchNodes import TrMatricesController
+from .TransportMatrixGenBunchNodes import TrMatrixGenBunchNode
+from .TransportMatrixGenBunchNodes import TrMatricesController
 
-from bunch_lattice.lattice.LinacDiagnosticsNodes import LinacBPM
+from .LinacDiagnosticsNodes import LinacBPM
 
 __all__ = []
 

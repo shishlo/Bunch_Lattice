@@ -4,6 +4,9 @@ import time
 
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
+# from linac import the C++ RF gap classes
+from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF
+
 # import the XmlDataAdaptor XML parser
 from orbit.utils.xml import XmlDataAdaptor
 
@@ -15,7 +18,6 @@ from orbit.core.bunch import Bunch, BunchTwissAnalysis
 #---- New Lattice
 from bunch_lattice.lattice import BunchLattice
 from bunch_lattice.parsers import SNS_BunchLatticeFactory
-
 
 from sns_linac_bunch_generator import SNS_Linac_BunchGenerator
 
@@ -35,6 +37,19 @@ acc_da = XmlDataAdaptor.adaptorForFile(xml_lattice_file_name)
 bunch_lattice_factory = SNS_BunchLatticeFactory()
 
 accLattice = bunch_lattice_factory.getAccLatticeFromDA(seq_names,acc_da)
+
+# ----set up RF Gap Model -------------
+# ---- There are three available models at this moment
+# ---- BaseRfGap  uses only E0TL*cos(phi)*J0(kr) with E0TL = const
+# ---- MatrixRfGap uses a matrix approach like envelope codes
+# ---- RfGapTTF uses Transit Time Factors (TTF) like PARMILA
+#cppGapModel = BaseRfGap
+#cppGapModel = MatrixRfGap
+cppGapModel = RfGapTTF
+rf_gaps = accLattice.getRF_Gaps()
+for rf_gap in rf_gaps:
+    rf_gap.setCppGapModel(cppGapModel())
+    rf_gap.setSlowTracker(True)
 
 # -----TWISS Parameters at the entrance of MEBT ---------------
 # transverse emittances are unnormalized and in pi*mm*mrad
@@ -94,6 +109,11 @@ bunch_in = bunch_gen.getBunch(nParticles=1000, distributorClass=WaterBagDist3D)
 # bunch_in = bunch_gen.getBunch(nParticles = 10000, distributorClass = KVDist3D)
 
 print("Bunch Generation completed.")
+
+#---- Sets tracker for all nodes (TEAPOT by default)
+#accLattice.setTracker(switch_to_tracker  = "TEAPOT")
+#accLattice.setTracker(switch_to_tracker  = "LINAC")
+
 
 # set up design
 accLattice.trackDesignBunch(bunch_in)

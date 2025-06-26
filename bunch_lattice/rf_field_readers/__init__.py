@@ -1,11 +1,10 @@
-## \namespace orbit::py_linac::rf_field_readers
-## \brief The classes to read and analyze the SuperFish output files
-##        with the electric and magnetic fields of the RF cavities.
-##        The field are assumed to have axial symmetry.
+## The classes to read and analyze the SuperFish output files
+## with the electric and magnetic fields of the RF cavities.
+## The field are assumed to have axial symmetry.
 ##
 ## Classes:
-## - RF_AxisFieldAnalysis         - Class. The analyzer for the RF electric filed
-##                       on the axis of RF cavity. It will calculate TTF T,T',S,S'
+## - RF_AxisFieldAnalysis - Class. The analyzer for the RF electric filed
+##                          on the axis of RF cavity. It will calculate TTF T,T',S,S'
 ## - SuperFish_3D_RF_FiledReader  - Class. Will read the SuperFish file and create
 ##           3D filed. It generates the field on the axis for RF_AxisFieldAnalysis
 # -------------------------------------------------------------------------

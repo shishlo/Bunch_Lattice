@@ -1,4 +1,4 @@
-from bunch_lattice.materials.VacuumWindowLinacNode import VacuumWindowNode
+from .VacuumWindowLinacNode import VacuumWindowNode
 
 
 __all__ = []

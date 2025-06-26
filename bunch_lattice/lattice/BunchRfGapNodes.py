@@ -75,7 +75,7 @@ class BunchRF_Gap(AbstractRF_Gap):
         # self.cppGapModel = BaseRfGap()
         self.cppGapModel = RfGapTTF()
 
-    def setTracker(self, switch=True):
+    def setSlowTracker(self, switch=True):
         """
         This method will switch RF gap model to slower one where transformations
         coefficients are calculated for each particle in the bunch.
