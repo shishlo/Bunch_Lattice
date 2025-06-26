@@ -9,10 +9,10 @@ import math
 import sys
 import os
 
-from orbit.py_linac.lattice import LinacApertureNode
-from orbit.py_linac.lattice import Quad, Drift, Bend, BunchRF_Gap, AxisFieldRF_Gap
-from orbit.py_linac.lattice import OverlappingQuadsNode
-from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
+from bunch_lattice.lattice import BunchApertureNode
+from bunch_lattice.lattice import Quad, Drift, Bend, BunchRF_Gap, AxisFieldRF_Gap
+from bunch_lattice.lattice import OverlappingQuadsBunchNode
+from bunch_lattice.lattice import AxisField_and_Quad_RF_Gap
 
 
 def Add_quad_apertures_to_lattice(accLattice, aprtNodes=[]):
@@ -21,7 +21,7 @@ def Add_quad_apertures_to_lattice(accLattice, aprtNodes=[]):
     It returns the list of Aperture nodes.
     """
     node_pos_dict = accLattice.getNodePositionsDict()
-    quads = accLattice.getNodesOfClasses([Quad, OverlappingQuadsNode])
+    quads = accLattice.getNodesOfClasses([Quad, OverlappingQuadsBunchNode])
     for node in quads:
         if isinstance(node, Quad):
             if node.hasParam("aperture") and node.hasParam("aprt_type"):
@@ -29,8 +29,8 @@ def Add_quad_apertures_to_lattice(accLattice, aprtNodes=[]):
                 a = node.getParam("aperture")
                 node_name = node.getName()
                 (posBefore, posAfter) = node_pos_dict[node]
-                apertureNodeBefore = LinacApertureNode(shape, a / 2.0, a / 2.0, posBefore)
-                apertureNodeAfter = LinacApertureNode(shape, a / 2.0, a / 2.0, posAfter)
+                apertureNodeBefore = BunchApertureNode(shape, a / 2.0, a / 2.0, posBefore)
+                apertureNodeAfter = BunchApertureNode(shape, a / 2.0, a / 2.0, posAfter)
                 apertureNodeBefore.setName(node_name + ":AprtIn")
                 apertureNodeAfter.setName(node_name + ":AprtOut")
                 apertureNodeBefore.setSequence(node.getSequence())
@@ -39,7 +39,7 @@ def Add_quad_apertures_to_lattice(accLattice, aprtNodes=[]):
                 node.addChildNode(apertureNodeAfter, node.EXIT)
                 aprtNodes.append(apertureNodeBefore)
                 aprtNodes.append(apertureNodeAfter)
-        if isinstance(node, OverlappingQuadsNode):
+        if isinstance(node, OverlappingQuadsBunchNode):
             # place to add aperture for the overlapping fields quads
             nParts = node.getnParts()
             simple_quads = node.getQuads()
@@ -62,13 +62,13 @@ def Add_quad_apertures_to_lattice(accLattice, aprtNodes=[]):
                     posAfter = pos_z + length / 2.0
                     for part_ind in range(nParts - 1):
                         if posBefore >= pos_part_arr[part_ind] and posBefore < pos_part_arr[part_ind + 1]:
-                            apertureNodeBefore = LinacApertureNode(shape, a / 2.0, a / 2.0, posBefore + node_start_pos)
+                            apertureNodeBefore = BunchApertureNode(shape, a / 2.0, a / 2.0, posBefore + node_start_pos)
                             apertureNodeBefore.setName(quad_name + ":AprtIn")
                             apertureNodeBefore.setSequence(node.getSequence())
                             node.addChildNode(apertureNodeBefore, node.BODY, part_ind, node.BEFORE)
                             aprtNodes.append(apertureNodeBefore)
                         if posAfter > pos_part_arr[part_ind] and posAfter <= pos_part_arr[part_ind + 1]:
-                            apertureNodeAfter = LinacApertureNode(shape, a / 2.0, a / 2.0, posAfter + node_start_pos)
+                            apertureNodeAfter = BunchApertureNode(shape, a / 2.0, a / 2.0, posAfter + node_start_pos)
                             apertureNodeAfter.setName(quad_name + ":AprtOut")
                             apertureNodeAfter.setSequence(node.getSequence())
                             node.addChildNode(apertureNodeAfter, node.BODY, part_ind, node.AFTER)
@@ -111,7 +111,7 @@ def Add_bend_apertures_to_lattice(accLattice, aprtNodes=[], step=0.25):
             for part_ind in range(nParts):
                 run_path = pos_part_arr[part_ind]
                 if run_path >= run_path_old + step:
-                    apertureNode = LinacApertureNode(shape, a_x / 2.0, a_y / 2.0, run_path)
+                    apertureNode = BunchApertureNode(shape, a_x / 2.0, a_y / 2.0, run_path)
                     aprt_name = node_name + ":" + str(part_ind) + ":Aprt"
                     if nParts == 1:
                         aprt_name = node_name + ":Aprt"
@@ -136,8 +136,8 @@ def Add_rfgap_apertures_to_lattice(accLattice, aprtNodes=[]):
             a = node.getParam("aperture")
             node_name = node.getName()
             (posBefore, posAfter) = node_pos_dict[node]
-            apertureNodeBefore = LinacApertureNode(shape, a / 2.0, a / 2.0, posBefore)
-            apertureNodeAfter = LinacApertureNode(shape, a / 2.0, a / 2.0, posAfter)
+            apertureNodeBefore = BunchApertureNode(shape, a / 2.0, a / 2.0, posBefore)
+            apertureNodeAfter = BunchApertureNode(shape, a / 2.0, a / 2.0, posAfter)
             apertureNodeBefore.setName(node_name + ":AprtIn")
             apertureNodeAfter.setName(node_name + ":AprtOut")
             apertureNodeBefore.setSequence(node.getSequence())
@@ -185,7 +185,7 @@ def Add_drift_apertures_to_lattice(accLattice, pos_start, pos_end, step, apertur
             run_path = pos_part_arr[part_ind]
             if run_path >= pos_start and run_path <= pos_end:
                 if run_path >= run_path_old + step:
-                    apertureNode = LinacApertureNode(shape, a / 2.0, a / 2.0, run_path)
+                    apertureNode = BunchApertureNode(shape, a / 2.0, a / 2.0, run_path)
                     aprt_name = node_name + ":" + str(part_ind) + ":Aprt"
                     if nParts == 1:
                         aprt_name = node_name + ":Aprt"
@@ -206,7 +206,7 @@ def AddScrapersAperturesToLattice(accLattice, node_name, x_size, y_size, aprtNod
     node_pos_dict = accLattice.getNodePositionsDict()
     node = accLattice.getNodesForName(node_name)[0]
     (posBefore, posAfter) = node_pos_dict[node]
-    apertureNode = LinacApertureNode(shape, x_size / 2.0, y_size / 2.0, posBefore)
+    apertureNode = BunchApertureNode(shape, x_size / 2.0, y_size / 2.0, posBefore)
     apertureNode.setName(node_name + ":Aprt")
     apertureNode.setSequence(node.getSequence())
     node.addChildNode(apertureNode, node.ENTRANCE)

@@ -9,6 +9,6 @@ py_sources = files([
 
 python.install_sources(
     py_sources,
-    subdir: 'orbit/py_linac/rf_field_readers',
+    subdir: 'bunch_lattices/rf_field_readers',
     # pure: true,
 )        

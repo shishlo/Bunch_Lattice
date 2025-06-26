@@ -12,7 +12,7 @@ from orbit.utils import orbitFinalize, NamedObject, ParamsDictObject
 from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import linac base node
-from orbit.py_linac.lattice import BaseLinacNode
+from bunch_lattice.lattice import BunchAccNode
 
 # import Collimator class from C++ code
 # /src/orbit/MaterialInteractions/Collimator.cc
@@ -44,7 +44,7 @@ from orbit.core.collimator import Collimator
 """
 
 
-class VacuumWindowNode(BaseLinacNode):
+class VacuumWindowNode(BunchAccNode):
     """
     The vacuum window node class for linac lattice
     """
@@ -53,7 +53,7 @@ class VacuumWindowNode(BaseLinacNode):
         """
         Constructor. Creates the vacuum window element.
         """
-        BaseLinacNode.__init__(self, name)
+        BunchAccNode.__init__(self, name)
         # ---- material
         self.ma = int(ma)
         self.materials_arr = ["carbon", "aluminum", "iron", "copper", "tantalum", "tungstun"]
@@ -115,5 +115,5 @@ class VacuumWindowNode(BaseLinacNode):
         Sets the position of the vacuum window to put this info
         into the lost particles bunch for each lost particle.
         """
-        BaseLinacNode.setPosition(self, pos)
+        BunchAccNode.setPosition(self, pos)
         self.collimator.setPosition(pos)

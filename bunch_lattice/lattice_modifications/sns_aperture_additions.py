@@ -10,8 +10,8 @@ import math
 import sys
 import os
 
-from orbit.py_linac.lattice import LinacApertureNode
-from orbit.py_linac.lattice import Quad
+from bunch_lattice.lattice import BunchApertureNode
+from bunch_lattice.lattice import Quad
 
 
 def AddMEBTChopperPlatesAperturesToSNS_Lattice(accLattice, aprtNodes):
@@ -28,7 +28,7 @@ def AddMEBTChopperPlatesAperturesToSNS_Lattice(accLattice, aprtNodes):
     for node in [node1, node2]:
         node_name = node.getName()
         (posBefore, posAfter) = node_pos_dict[node]
-        apertureNode = LinacApertureNode(shape, x_size / 2.0, y_size / 2.0, posBefore)
+        apertureNode = BunchApertureNode(shape, x_size / 2.0, y_size / 2.0, posBefore)
         apertureNode.setName(node_name + ":Aprt")
         apertureNode.setSequence(node.getSequence())
         node.addChildNode(apertureNode, node.ENTRANCE)

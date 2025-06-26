@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # --------------------------------------------------------------
 # This is a Enge Function Factory specific for the J-PARC. Some
 # Enge's function parameters are defined by the aperture and length,
@@ -11,9 +9,9 @@ import math
 import sys
 import os
 
-from orbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import PMQ_Trace3D_Function
-from orbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import EngeFunction
-from orbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import SimpleQuadFieldFunc
+from bunch_lattice.overlapping_fields.overlapping_quad_fields_lib import PMQ_Trace3D_Function
+from bunch_lattice.overlapping_fields.overlapping_quad_fields_lib import EngeFunction
+from bunch_lattice.overlapping_fields.overlapping_quad_fields_lib import SimpleQuadFieldFunc
 
 
 def JPARC_EngeFunctionFactory(quad):

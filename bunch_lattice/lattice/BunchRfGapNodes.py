@@ -97,7 +97,7 @@ class BunchRF_Gap(AbstractRF_Gap):
         Method. Sets the number of body parts of the node.
         For the RF gap with zero length it will be only 1.
         """
-        BaseLinacNode.setnParts(self, 1)
+        BunchAccNode.setnParts(self, 1)
 
     def setCppGapModel(self, cppGapModel=MatrixRfGap()):
         """

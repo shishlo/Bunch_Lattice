@@ -461,7 +461,7 @@ class Quad(MagnetNode):
         """
         Returns the field of the quad.
         This function was added to make a uniform
-        interface with OverlappingQuadsNode.
+        interface with OverlappingQuadsBunchNode.
         """
         G = 0.0
         if abs(z) < self.getLength() / 2.0:

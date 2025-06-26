@@ -3,7 +3,7 @@
 # --------------------------------------------------------------
 # The functions for the lattice modifications to replace simple
 # quads (class Quad) with objects that describe the fields of
-# several quads with overlapping fields (class OverlappingQuadsNode).
+# several quads with overlapping fields (class OverlappingQuadsBunchNode).
 # quadrupoles.
 # These combine fields can be chopped into parts to include the
 # elements with zero length. All others non-zero length elements
@@ -18,16 +18,16 @@ import time
 # import from orbit Python utilities
 from orbit.utils import orbitFinalize
 
-from orbit.py_linac.lattice import Quad, Drift
+from bunch_lattice.lattice import Quad, Drift
 
-from orbit.py_linac.lattice import OverlappingQuadsNode
+from bunch_lattice.lattice import OverlappingQuadsBunchNode
 
-from orbit.py_linac.lattice_modifications.rf_quad_overlap_modifications_lib import GetEngeFunction
+from bunch_lattice.lattice_modifications.rf_quad_overlap_modifications_lib import GetEngeFunction
 
 
 def Replace_Quads_to_OverlappingQuads_Nodes(accLattice, z_step, accSeq_Names=[], quad_Names=[], EngeFunctionFactory=GetEngeFunction):
     """
-    Function will replace  Quad nodes by OverlappingQuadsNode nodes.
+    Function will replace  Quad nodes by OverlappingQuadsBunchNode nodes.
     The replacement will be performed only for specified sequences.
     If the quad names list is empty, all of them will be replaced!
     z_step defines the longitudinal step during the tracking through the
@@ -129,12 +129,12 @@ def Replace_Quads_to_OverlappingQuads_Nodes(accLattice, z_step, accSeq_Names=[],
                     orbitFinalize(msg)
         # ----------------------------------------------------------------------------
         # -----------------------------------------------------
-        # ---- Now we are going to build a new lattice with OverlappingQuadsNode
+        # ---- Now we are going to build a new lattice with OverlappingQuadsBunchNode
         # ---- classes. The space covered by group of quads with overlapping fields
-        # ---- will be represented by one or several OverlappingQuadsNode instances.
-        # ---- We may need several OverlappingQuadsNode instances to include a zero
+        # ---- will be represented by one or several OverlappingQuadsBunchNode instances.
+        # ---- We may need several OverlappingQuadsBunchNode instances to include a zero
         # ---- length nodes. They will cut the covered space in parts. Each part will
-        # ---- be represented by one OverlappingQuadsNode instance with the same
+        # ---- be represented by one OverlappingQuadsBunchNode instance with the same
         # ---- field source (all overlapping quads).
         # ---- We will generate new nodes in an arbitrary order, but at the end
         # ---- we will sort them according to their position.
@@ -219,7 +219,7 @@ def Replace_Quads_to_OverlappingQuads_Nodes(accLattice, z_step, accSeq_Names=[],
                 # --- we keep the old positions
                 new_nodes.append(nodes[node_ind])
         # --------------------------------------------------------------------------
-        # ---- 5st STEP - create OverlappingQuadsNode nodes to cover all the quad groups
+        # ---- 5st STEP - create OverlappingQuadsBunchNode nodes to cover all the quad groups
         for quad_group_ind in range(n_groups):
             [quads_arr, group_pos_start, group_pos_end, ind_start, ind_end] = quad_groups_and_ind_arr[quad_group_ind]
             (quads_tmp, zero_length_nodes) = Get_quads_zeroLengthNodes_in_range(accSeq, ind_start, ind_end)
@@ -229,7 +229,7 @@ def Replace_Quads_to_OverlappingQuads_Nodes(accLattice, z_step, accSeq_Names=[],
             pos_end = node_pos_end
             ovrlp_count = 0
             for ind in range(len(zero_length_nodes) + 1):
-                node = OverlappingQuadsNode()
+                node = OverlappingQuadsBunchNode()
                 name = quads_arr[0].getName() + ":group:" + str(ovrlp_count + 1) + ":" + node.getType()
                 node.setName(name)
                 if ind == len(zero_length_nodes):

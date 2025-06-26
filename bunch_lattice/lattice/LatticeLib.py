@@ -48,7 +48,7 @@ class Lattice(AccLattice):
             if(seq == None): continue
             if not seq in self.__sequences:
                 self.__sequences.append(seq)
-                self.setAccLattice(self)
+                seq.setAccLattice(self)
         # ------define sequences' position and length (position of the beginning of the sequence)
         seqs = self.getSequences()
         for seq in seqs:
@@ -293,7 +293,7 @@ class Lattice(AccLattice):
         (posBefore, posAfter) = node_pos_dict[node]
         return (node, index, posBefore, posAfter)
 
-class BunchLattice(AccLattice):
+class BunchLattice(Lattice):
     """
     The subclass of the Lattice class. It is specific for Bunch tracking.
     """
@@ -361,7 +361,7 @@ class BunchLattice(AccLattice):
 
 class RF_Cavity(NamedObject, ParamsDictObject):
     """
-    This is the class to keep refernces to the RF Gaps which are BaseLinacNode
+    This is the class to keep refernces to the RF Gaps which are BunchAccNode
     subclasses. This class does not belong to the AccNodes.
     """
 

@@ -12,6 +12,6 @@ py_sources = files([
 
 python.install_sources(
     py_sources,
-    subdir: 'orbit/py_linac/lattice',
+    subdir: 'bunch_lattice/lattice',
     # pure: true,
 )

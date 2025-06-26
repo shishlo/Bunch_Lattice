@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # --------------------------------------------------------------
 # This is a Enge Function Factory specific for the SNS. Some
 # Enge's function parameters are found by fitting the measured or
@@ -13,8 +11,8 @@ import math
 import sys
 import os
 
-from orbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import EngeFunction
-from orbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import SimpleQuadFieldFunc
+from bunch_lattice.overlapping_fields.overlapping_quad_fields_lib import EngeFunction
+from bunch_lattice.overlapping_fields.overlapping_quad_fields_lib import SimpleQuadFieldFunc
 
 
 def SNS_EngeFunctionFactory(quad):

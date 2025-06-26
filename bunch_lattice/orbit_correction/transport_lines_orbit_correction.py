@@ -12,10 +12,10 @@ from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
 
 from orbit.core.bunch import Bunch, BunchTwissAnalysis
 
-from orbit.py_linac.lattice import Quad
-from orbit.py_linac.lattice import DCorrectorH, DCorrectorV
-from orbit.py_linac.lattice import MarkerLinacNode
-from orbit.py_linac.lattice import BaseLinacNode
+from bunch_lattice.lattice import Quad
+from bunch_lattice.lattice import DCorrectorH, DCorrectorV
+from bunch_lattice.lattice import MarkerNode
+from bunch_lattice.lattice import BunchAccNode
 
 from orbit.core.orbit_utils import Matrix, PhaseVector
 
@@ -28,14 +28,14 @@ def printM(m):
         print("")
 
 
-class TransverseBPM(BaseLinacNode):
+class TransverseBPM(BunchAccNode):
     """
     BPM node for transverse position report
     """
 
     def __init__(self, trajCorrection, bpm_marker_node, sfx=""):
         name = bpm_marker_node.getName() + "_diag" + sfx
-        BaseLinacNode.__init__(self, name)
+        BunchAccNode.__init__(self, name)
         # ---- the trajectory correction instance that created this node
         self.trajCorrection = trajCorrection
         self.bpm_marker_node = bpm_marker_node
@@ -166,7 +166,7 @@ class TrajectoryCorrection:
         self.bpm_node_arr = []
         bpm_nodes = []
         if bpms == None:
-            markers = self.lattice.getNodesOfClass(MarkerLinacNode)
+            markers = self.lattice.getNodesOfClass(MarkerNode)
             for node in markers:
                 if node.getName().find("BPM") >= 0:
                     bpm_nodes.append(node)

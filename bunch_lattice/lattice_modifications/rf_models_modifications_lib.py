@@ -24,9 +24,9 @@ from orbit.core.orbit_mpi import mpi_comm, MPI_Comm_rank
 # import from orbit Python utilities
 from orbit.utils import orbitFinalize
 
-# from orbit.py_linac.lattice import LinacApertureNode
-from orbit.py_linac.lattice import Quad, Drift
-from orbit.py_linac.lattice import BunchRF_Gap, AxisFieldRF_Gap
+# from bunch_lattice.lattice import BunchApertureNode
+from bunch_lattice.lattice import Quad, Drift
+from bunch_lattice.lattice import BunchRF_Gap, AxisFieldRF_Gap
 
 from orbit.core.orbit_utils import Function, SplineCH, GaussLegendreIntegrator
 

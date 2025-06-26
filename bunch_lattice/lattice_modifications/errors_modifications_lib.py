@@ -31,17 +31,17 @@ from orbit.utils import TypedObject
 
 # import general accelerator elements and lattice
 from orbit.lattice import AccNode
-from orbit.py_linac.lattice import Quad
-from orbit.py_linac.lattice import DCorrectorH, DCorrectorV
-from orbit.py_linac.lattice import Bend
+from bunch_lattice.lattice import Quad
+from bunch_lattice.lattice import DCorrectorH, DCorrectorV
+from bunch_lattice.lattice import Bend
 
-# import error controllers from orbit.py_linac.errors package
-from orbit.py_linac.errors import ErrorCntrlCoordDisplacement
-from orbit.py_linac.errors import ErrorCntrlBendField
-from orbit.py_linac.errors import ErrorCntrlLongitudinalDisplacement
-from orbit.py_linac.errors import ErrorCntrlStraightRotationX
-from orbit.py_linac.errors import ErrorCntrlStraightRotationY
-from orbit.py_linac.errors import ErrorCntrlStraightRotationZ
+# import error controllers from bunch_lattice.errors package
+from bunch_lattice.errors import ErrorCntrlCoordDisplacement
+from bunch_lattice.errors import ErrorCntrlBendField
+from bunch_lattice.errors import ErrorCntrlLongitudinalDisplacement
+from bunch_lattice.errors import ErrorCntrlStraightRotationX
+from bunch_lattice.errors import ErrorCntrlStraightRotationY
+from bunch_lattice.errors import ErrorCntrlStraightRotationZ
 
 
 class ErrorForNodesModification(NamedObject, TypedObject):

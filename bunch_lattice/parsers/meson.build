@@ -9,6 +9,6 @@ py_sources = files([
 
 python.install_sources(
     py_sources,
-    subdir: 'orbit/py_linac/linac_parsers',
+    subdir: 'bunch_lattices/linac_parsers',
     # pure: true,
 )        

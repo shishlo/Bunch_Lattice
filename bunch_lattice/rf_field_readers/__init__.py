@@ -10,8 +10,8 @@
 ##           3D filed. It generates the field on the axis for RF_AxisFieldAnalysis
 # -------------------------------------------------------------------------
 
-from RF_AxisFieldAnalysis import RF_AxisFieldAnalysis
-from SuperFish_3D_RF_FieldReader import SuperFish_3D_RF_FieldReader
+from bunch_lattice.rf_field_readers.RF_AxisFieldAnalysis import RF_AxisFieldAnalysis
+from bunch_lattice.rf_field_readers.SuperFish_3D_RF_FieldReader import SuperFish_3D_RF_FieldReader
 
 __all__ = []
 

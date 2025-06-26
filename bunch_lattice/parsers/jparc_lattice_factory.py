@@ -1,5 +1,5 @@
 """
-The JPARC Linac Lattice Factory generates the Linac Accelerator Lattice from the information
+The JPARC Bunch Lattice Factory generates the Accelerator Lattice from the information
 inside of the XML input file. This structure of this file is very similar to SNS.
 The difference is the order of accelerator sequences. In JPARC file they are in  arbitrary order.
 The user will combine them on the application script level. The reason for this: JPARC linac
@@ -12,17 +12,17 @@ import os
 import sys
 import math
 
-from orbit.py_linac.linac_parsers.sns_linac_lattice_factory import SNS_LinacLatticeFactory
+from bunch_lattice.parsers.sns_lattice_factory import SNS_BunchLatticeFactory
 
 
-class JPARC_LinacLatticeFactory(SNS_LinacLatticeFactory):
+class JPARC_BunchLatticeFactory(SNS_BunchLatticeFactory):
     """
     The JPARC Linac Lattice Factory generates the Linac Accelerator Lattice
     from the XML file of the specific structure.
     """
 
     def __init__(self):
-        SNS_LinacLatticeFactory.__init__(self)
+        SNS_BunchLatticeFactory.__init__(self)
 
     def filterSequences_and_OptionalCheck(self, accSeq_da_arr, names):
         """

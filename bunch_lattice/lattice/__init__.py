@@ -1,15 +1,9 @@
-## \brief The base classes of PyORBIT lattice structure.
-##
-## Classes:
-## - Lattice               - Class. The general lattice.
-## - BunchAccNodes         - Module. Collection of the accelerator nodes for bunch tracking: drifts, quads, RF gaps etc..
-## - BunchRfGapNodes       - Module. Collection of RF Gap models for bunch tracking
-
 #---- Lattice library from file LatticeLib.py
 from bunch_lattice.lattice.LatticeLib import Lattice, BunchLattice, RF_Cavity, Sequence
 
 #---- AccNodes from BunchAccNodes.py
 from bunch_lattice.lattice.BunchAccNodes import BunchAccNode
+from bunch_lattice.lattice.BunchAccNodes import MagnetNode
 from bunch_lattice.lattice.BunchAccNodes import MarkerNode, Drift, Quad, AbstractRF_Gap, Bend
 from bunch_lattice.lattice.BunchAccNodes import Solenoid
 from bunch_lattice.lattice.BunchAccNodes import DCorrectorH, DCorrectorV
@@ -57,6 +51,7 @@ __all__.append("Sequence")
 __all__.append("BunchAccNode")
 __all__.append("MarkerNode")
 __all__.append("Drift")
+__all__.append("MagnetNode")
 __all__.append("Quad")
 __all__.append("AbstractRF_Gap")
 __all__.append("Bend")

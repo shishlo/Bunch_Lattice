@@ -8,6 +8,6 @@ py_sources = files([
 
 python.install_sources(
     py_sources,
-    subdir: 'orbit/py_linac/materials',
+    subdir: 'bunch_lattice/materials',
     # pure: true,
 )        

@@ -1,10 +1,10 @@
 """
-The SNS Linac Lattice Factory generates the Linac Accelerator Lattice from the information
+The SNS Lattice Factory generates the Bunch Accelerator Lattice from the information
 inside of the XML input file. This structure of this file is specific for the SNS.
 Users from other facilities can use the same XML files with the same structure, but if they
 need something else they can create their own Factory for different structure.
 Here we use XmlDataAdaptor to parse the XML file.
-The SNS Linac Lattice Factory uses a predefined set of Linac Acc Elements.
+The SNS Bunch Lattice Factory uses a predefined set of Linac Acc Elements.
 """
 
 import os
@@ -14,16 +14,15 @@ import math
 # import the XmlDataAdaptor XML parser
 from orbit.utils.xml import XmlDataAdaptor
 
-from orbit.py_linac.lattice import LinacAccLattice
-from orbit.py_linac.lattice import LinacAccNodes
+from bunch_lattice.lattice import BunchLattice
 
-from orbit.py_linac.lattice import BaseLinacNode, LinacNode, LinacMagnetNode, MarkerLinacNode, Drift, Quad, AbstractRF_Gap, Bend
-from orbit.py_linac.lattice import DCorrectorH, DCorrectorV, ThickKick
-from orbit.py_linac.lattice import Solenoid
-from orbit.py_linac.lattice import RF_Cavity, Sequence
-from orbit.py_linac.lattice import BunchRF_Gap
+from bunch_lattice.lattice import MarkerNode, Drift, Quad, AbstractRF_Gap, Bend
+from bunch_lattice.lattice import DCorrectorH, DCorrectorV, ThickKick
+from bunch_lattice.lattice import Solenoid
+from bunch_lattice.lattice import RF_Cavity, Sequence
+from bunch_lattice.lattice import BunchRF_Gap
 
-from orbit.py_linac.materials import VacuumWindowNode
+from bunch_lattice.materials import VacuumWindowNode
 
 # import general accelerator elements
 from orbit.lattice import AccNode
@@ -32,7 +31,7 @@ from orbit.lattice import AccNode
 from orbit.utils import orbitFinalize
 
 
-class SNS_LinacLatticeFactory:
+class SNS_BunchLatticeFactory:
     """
     The SNS Linac Lattice Factory generates the Linac Accelerator Lattice
     from the XML file of the specific structure.
@@ -63,7 +62,7 @@ class SNS_LinacLatticeFactory:
         Returns the linac accelerator lattice for specified sequence names and for a specified XML file.
         """
         if len(names) < 1:
-            msg = "The SNS_LinacLatticeFactory method getAccLattice(names,xml_file_name): you have to specify the names array!"
+            msg = "The SNS_BunchLatticeFactory method getAccLattice(names,xml_file_name): you have to specify the names array!"
             msg = msg + os.linesep
             msg = msg + "Stop."
             msg = msg + os.linesep
@@ -77,7 +76,7 @@ class SNS_LinacLatticeFactory:
         Returns the linac accelerator lattice for specified sequence names.
         """
         if len(names) < 1:
-            msg = "The SNS_LinacLatticeFactory method getAccLatticeFromDA(names,): you have to specify the names array!"
+            msg = "The SNS_BunchLatticeFactory method getAccLatticeFromDA(names,): you have to specify the names array!"
             msg = msg + os.linesep
             msg = msg + "Stop."
             msg = msg + os.linesep
@@ -87,7 +86,7 @@ class SNS_LinacLatticeFactory:
         # -----let's filter and check that the names in good order
         accSeq_da_arr = self.filterSequences_and_OptionalCheck(accSeq_da_arr, names)
         # ----make linac lattice
-        linacAccLattice = LinacAccLattice(acc_da.getName())
+        linacAccLattice = BunchLattice(acc_da.getName())
 
         # There are the folowing possible types of elements in the linac tree:
         # QUAD - quadrupole
@@ -298,7 +297,7 @@ class SNS_LinacLatticeFactory:
                         if params_da.hasAttribute("B"):
                             accNode.setParam("B", params_da.doubleValue("B"))
                     else:
-                        accNode = MarkerLinacNode(node_da.stringValue("name"))
+                        accNode = MarkerNode(node_da.stringValue("name"))
                     accNode.setParam("pos", node_pos)
                     thinNodes.append(accNode)
             # ----- assign the thin nodes that are inside the thick nodes
@@ -510,7 +509,7 @@ class SNS_LinacLatticeFactory:
             if isinstance(node, BunchRF_Gap):
                 self.makeDA_rf_gap(seq_da, node)
                 continue
-            if isinstance(node, MarkerLinacNode):
+            if isinstance(node, MarkerNode):
                 self.makeDA_marker(seq_da, node)
                 continue
         # ----------------------------------

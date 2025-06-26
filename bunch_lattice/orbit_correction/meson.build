@@ -8,6 +8,6 @@ py_sources = files([
 
 python.install_sources(
     py_sources,
-    subdir: 'orbit/py_linac/orbit_correction',
+    subdir: 'bunch_lattices/orbit_correction',
     # pure: true,
 )        

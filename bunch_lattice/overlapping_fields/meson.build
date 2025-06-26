@@ -10,6 +10,6 @@ py_sources = files([
 
 python.install_sources(
     py_sources,
-    subdir: 'orbit/py_linac/overlapping_fields',
+    subdir: 'bunch_lattices/overlapping_fields',
     # pure: true,
 )        

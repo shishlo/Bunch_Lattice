@@ -24,17 +24,17 @@ import time
 # import from orbit Python utilities
 from orbit.utils import orbitFinalize
 
-# from orbit.py_linac.lattice import LinacApertureNode
-from orbit.py_linac.lattice import Quad, Drift
-from orbit.py_linac.lattice import BunchRF_Gap, AxisFieldRF_Gap
-from orbit.py_linac.lattice import OverlappingQuadsNode
-from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
+# from bunch_lattice.lattice import BunchApertureNode
+from bunch_lattice.lattice import Quad, Drift
+from bunch_lattice.lattice import BunchRF_Gap, AxisFieldRF_Gap
+from bunch_lattice.lattice import OverlappingQuadsBunchNode
+from bunch_lattice.lattice import AxisField_and_Quad_RF_Gap
 
-from orbit.py_linac.overlapping_fields import EngeFunction
+from bunch_lattice.overlapping_fields import EngeFunction
 
 from orbit.core.orbit_utils import Function
 
-from orbit.py_linac.lattice_modifications.rf_models_modifications_lib import Make_AxisFieldRF_Gaps_and_Find_Neihbor_Nodes
+from bunch_lattice.lattice_modifications.rf_models_modifications_lib import Make_AxisFieldRF_Gaps_and_Find_Neihbor_Nodes
 
 
 def GetEngeFunction(quad):
@@ -166,7 +166,7 @@ def Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes(
             orbitFinalize(msg)
         # -----------------------------------------------------
         # ---- Now we are going to build a new lattice with AxisField_and_Quad_RF_Gap
-        # ---- and OverlappingQuadsNode classes. Even drifts will be replaced with
+        # ---- and OverlappingQuadsBunchNode classes. Even drifts will be replaced with
         # ---- these nodes to simplify the lattice structure. The original lattice
         # ---- should have only drifts, quads, and BunchRF_Gaps as elements with
         # ---- non-zero length. If the user wants to include other sources of the EM
@@ -200,7 +200,7 @@ def Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes(
             pos_end = node_pos_end
             ovrlp_count = 0
             for ind in range(len(zero_length_nodes) + 1):
-                node = OverlappingQuadsNode()
+                node = OverlappingQuadsBunchNode()
                 name = rf_gap.getName() + ":Before:" + str(ovrlp_count + 1) + ":" + node.getType()
                 node.setName(name)
                 if ind == len(zero_length_nodes):
@@ -245,7 +245,7 @@ def Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes(
             pos_end = node_pos_end - accSeq_z_start
             ovrlp_count = 0
             for ind in range(len(zero_length_nodes) + 1):
-                node = OverlappingQuadsNode()
+                node = OverlappingQuadsBunchNode()
                 name = rf_gap.getName() + ":After:" + str(ovrlp_count + 1) + ":" + node.getType()
                 node.setName(name)
                 if ind == len(zero_length_nodes):
@@ -340,7 +340,7 @@ def Replace_BunchRF_Gap_and_Quads_to_Overlapping_Nodes(
                 pos_end = node_pos_end
                 ovrlp_count = 0
                 for ind in range(len(zero_length_nodes) + 1):
-                    node = OverlappingQuadsNode()
+                    node = OverlappingQuadsBunchNode()
                     name = rf_gap0.getName() + ":After:" + str(ovrlp_count + 1) + ":" + node.getType()
                     node.setName(name)
                     if ind == len(zero_length_nodes):
