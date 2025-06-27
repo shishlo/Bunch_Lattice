@@ -4,8 +4,8 @@ In addition to the usual accelerator lattice it has the sequences and
 RF cavities. The sequences  are containers for accelerator nodes 
 (could be also RF gap nodes). RF cavities are other containers for RF gap nodes
 that provide the time synchronization between RF gaps. The Cavity class keeps 
-the refernce to RF gaps and a value of the cavity amplitude as a whole element.
-The Sequence class is used to keep iformation about positions of elements 
+the reference to RF gaps and a value of the cavity amplitude as a whole element.
+The Sequence class is used to keep information about positions of elements
 that are inside.
 The subclass BunchLattice tracks the bunch through accelerator nodes.
 """
